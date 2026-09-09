@@ -15,7 +15,7 @@ export default function ImportedBrands() {
   return (
     <div className="daesang-sub-page">
       {/* SECTION: 페이지 상단 히어로 배너 (제목/부제) */}
-      <section className="daesang-sub-hero" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1477884143824-5686f224b1a3?auto=format&fit=crop&w=2560&q=80')" }}>
+      <section className="daesang-sub-hero" style={{ backgroundImage: "url('./assets/hero_slide_2.jpg')" }}>
         <div className="daesang-section-overlay"></div>
         <div className="daesang-sub-hero-content">
           <span className="daesang-poetic-sub">IMPORTED PORTFOLIO</span>
