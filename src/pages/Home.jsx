@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
+import { useData } from '../context/DataContext';
 import { brands } from '../data/brands';
 import { partners } from '../data/partners';
 import CineSticky from '../components/CineSticky';
@@ -10,6 +11,7 @@ import Reveal from '../components/Reveal';
 export default function Home() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
+  const { siteSettings } = useData(); // 관리자 페이지 "사이트 설정" 탭에서 등록한 인트로 히어로 사진
 
   const sections = [
     { id: 'intro', label: isEn ? 'Intro' : '인트로' },
@@ -66,7 +68,7 @@ export default function Home() {
       <section id="intro" className="cine-hero">
         <div className="cine-hero-media">
           <img
-            src="https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&w=2400&q=80"
+            src={siteSettings.heroImage}
             alt=""
           />
         </div>

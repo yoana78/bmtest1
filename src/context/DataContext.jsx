@@ -12,11 +12,13 @@ const DataContext = createContext();
 const DATA_VERSION = '9';
 const BRANDS_KEY = `boomyung_brands_v${DATA_VERSION}`;
 const PRODUCTS_KEY = `boomyung_products_v${DATA_VERSION}`;
-const SETTINGS_KEY = 'boomyung_site_settings_v1';
+const SETTINGS_KEY = 'boomyung_site_settings_v2';
 
 // 사이트 설정 기본값 - 관리자 페이지 "사이트 설정" 탭에서 바꾸지 않으면 이 값이 쓰임
+// heroImage: 홈 화면 최상단 시네마틱 인트로 배경 사진 (단일 이미지, 캐러셀 아님)
 const defaultSiteSettings = {
-  contactEmail: 'help@petsb2b.co.kr'
+  contactEmail: 'help@petsb2b.co.kr',
+  heroImage: './assets/hero_slide_4.jpg'
 };
 
 export function DataProvider({ children }) {

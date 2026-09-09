@@ -242,6 +242,20 @@ export default function Admin() {
     setTimeout(() => setSuccessMsg(''), 4000);
   };
 
+  // 홈 화면 인트로 히어로 사진 교체 업로드
+  const handleHeroImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        updateSiteSettings({ heroImage: reader.result });
+        setSuccessMsg(isEn ? 'Hero image updated!' : '히어로 이미지가 변경되었습니다!');
+        setTimeout(() => setSuccessMsg(''), 4000);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Submit Brand
   const handleBrandSubmit = (e) => {
     e.preventDefault();
@@ -803,6 +817,26 @@ export default function Admin() {
                 💾 {isEn ? 'Save' : '저장하기'}
               </button>
             </form>
+          )}
+
+          {activeTab === 'settings' && (
+            <div style={{ marginTop: '24px', background: '#FFFFFF', padding: '36px', borderRadius: '12px', border: '1px solid #E5E7EB', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', display: 'grid', gap: '16px' }}>
+              <h2 style={{ fontSize: '1.4rem', color: '#0A2540', marginBottom: '4px' }}>
+                🖼️ {isEn ? 'Home Hero Image' : '메인페이지 히어로 이미지'}
+              </h2>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: '#6B7280' }}>
+                {isEn
+                  ? 'The full-screen background photo at the very top of the Home page.'
+                  : '홈페이지 최상단 시네마틱 인트로 섹션의 배경 사진입니다.'}
+              </p>
+              <img src={siteSettings.heroImage} alt="히어로 이미지 미리보기" style={{ width: '100%', maxWidth: '400px', aspectRatio: '2.3 / 1', objectFit: 'cover', borderRadius: '8px', border: '1px solid #E5E7EB' }} />
+              <div>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#374151' }}>
+                  {isEn ? 'Replace Image' : '이미지 교체'}
+                </label>
+                <input type="file" accept="image/*" onChange={handleHeroImageUpload} style={{ width: '100%', maxWidth: '400px', padding: '8px', border: '1px solid #D1D5DB', borderRadius: '6px' }} />
+              </div>
+            </div>
           )}
 
         </div>
