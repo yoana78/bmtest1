@@ -1,0 +1,15 @@
+export const partners = [
+  { id: 'emart', nameKo: '이마트', nameEn: 'E-MART', logo: './assets/partners/emart.jpg' },
+  { id: 'homeplus', nameKo: '홈플러스', nameEn: 'Homeplus', logo: './assets/partners/homeplus.jpg' },
+  { id: 'costco', nameKo: '코스트코', nameEn: 'COSTCO', logo: './assets/partners/costco.jpg' },
+  { id: 'coupang', nameKo: '쿠팡', nameEn: 'Coupang', logo: './assets/partners/coupang.jpg' },
+  { id: 'lottemart', nameKo: '롯데마트', nameEn: 'LOTTE Mart', logo: './assets/partners/lottemart.jpg' },
+  { id: 'daiso', nameKo: '다이소', nameEn: 'Daiso', logo: './assets/partners/daiso.jpg' },
+  { id: 'cu', nameKo: 'CU', nameEn: 'CU', logo: './assets/partners/cu.jpg' },
+  { id: 'gs25', nameKo: 'GS25', nameEn: 'GS25', logo: './assets/partners/gs25.jpg' },
+  { id: 'seveneleven', nameKo: '세븐일레븐', nameEn: '7-Eleven', logo: './assets/partners/seveneleven.jpg' },
+  { id: 'emart24', nameKo: '이마트24', nameEn: 'emart24', logo: './assets/partners/emart24.jpg' },
+  { id: 'gsretail', nameKo: 'GS리테일', nameEn: 'GS Retail', logo: './assets/partners/gsretail.jpg' },
+  { id: 'lottesuper', nameKo: '롯데슈퍼', nameEn: 'LOTTE Super', logo: './assets/partners/lottesuper.jpg' },
+  { id: 'jaju', nameKo: '자주', nameEn: 'JAJU', logo: './assets/partners/jaju.jpg' },
+];
