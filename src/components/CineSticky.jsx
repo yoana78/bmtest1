@@ -53,6 +53,9 @@ export default function CineSticky({ blocks }) {
             className="cine-block"
             style={{ opacity: i === active ? 1 : 0.35 }}
           >
+            <div className="cine-block-media">
+              <img src={b.image} alt="" />
+            </div>
             <span className="cine-block-tag">{b.tag}</span>
             <h3>{b.title}</h3>
             <p>{b.body}</p>
