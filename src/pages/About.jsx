@@ -25,8 +25,8 @@ export default function About() {
       year: '2024 ~ Present',
       titleKo: '글로벌 네트워크 및 브랜드 확정',
       titleEn: 'Global Network & Brand Expansion',
-      itemsKo: ['호마드 사료 간식 공장', '웰젠 R&D 연구소 체계 구축', '글로벌 OEM/ODM 공급 체인 확장'],
-      itemsEn: ['Homad pet food & snack factory', 'Established Wellzen R&D Center system', 'Expanded global OEM/ODM supply chain']
+      itemsKo: ['사료 간식 공장', 'R&D 연구소 체계 구축', '글로벌 OEM/ODM 공급 체인 확장'],
+      itemsEn: ['Pet food & snack factory', 'Established R&D Center system', 'Expanded global OEM/ODM supply chain']
     },
     {
       year: '2023',
@@ -199,7 +199,7 @@ export default function About() {
           <div className="daesang-trust-grid">
             <div className="daesang-trust-card" onClick={() => setGalleryImages(homadImages)} style={{ cursor: 'pointer' }}>
               <span className="trust-code">KOREA FACTORY</span>
-              <h3>{isEn ? 'Homad Pet Food & Snack Factory' : '호마드 사료 및 간식 공장'}</h3>
+              <h3>{isEn ? 'Pet Food & Snack Factory' : '사료 및 간식 공장'}</h3>
               <p>
                 {isEn
                   ? 'Pet food and food manufacturing facility holding ISO 22000 and HACCP certifications.'
@@ -213,7 +213,7 @@ export default function About() {
 
             <div className="daesang-trust-card" onClick={() => setGalleryImages(wellzenImages)} style={{ cursor: 'pointer' }}>
               <span className="trust-code">R&amp;D CENTER</span>
-              <h3>{isEn ? 'Wellzen R&D Center' : '웰젠 R&D 연구소'}</h3>
+              <h3>{isEn ? 'R&D Center' : 'R&D 연구소'}</h3>
               <p>
                 {isEn
                   ? 'Specialized pet healthcare research center leading raw material verification and processing technology development.'
