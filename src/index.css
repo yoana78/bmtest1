@@ -790,7 +790,7 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
   padding: 4px;
   overflow: hidden;
 }
-.pet-distributor-card img { max-width: 70%; max-height: 70%; object-fit: contain; }
+.pet-distributor-card img { max-width: 49%; max-height: 49%; object-fit: contain; }
 
 /* CTA 스플릿 */
 .cine-cta {
