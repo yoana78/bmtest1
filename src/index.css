@@ -1530,7 +1530,7 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 }
 
 @media (max-width: 900px) {
-  .topbar-inner { padding: 0 20px; gap: 12px; height: 60px; }
+  .topbar-inner { padding: 0 20px; gap: 12px; height: 60px; justify-content: space-between; }
   .topbar-logo-text { display: none; }
   .topbar-nav { display: none; }
   .topbar-cta { display: none; }
@@ -1595,6 +1595,8 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 
   .cine-hero { height: 88vh; }
   .cine-hero-inner { padding: 0 7vw 10vh; }
+  .cine-hero-media img { object-position: 78% center; }
+  .cine-sticky-media { position: relative; top: auto; height: 56vh; }
   .cine-stats { grid-template-columns: 1fr; }
   .cine-stat { border-right: none; }
   .cine-row { grid-template-columns: 32px 44px 1fr; gap: 14px; padding: 22px 4px; }
