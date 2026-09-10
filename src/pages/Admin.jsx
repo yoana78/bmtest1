@@ -7,7 +7,7 @@ export default function Admin() {
   const isEn = lang === 'en';
   const {
     brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData,
-    siteSettings, updateSiteSettings
+    siteSettings, updateSiteSettings, syncNow
   } = useData();
   const [productFilterBrand, setProductFilterBrand] = useState('');
   const [productSearch, setProductSearch] = useState('');
@@ -94,6 +94,8 @@ export default function Admin() {
     if (passwordInput === '3051') {
       setIsAuthenticated(true);
       setPasswordError('');
+      sessionStorage.setItem('admin_pw', passwordInput); // DataContext가 저장 요청 시 이 값을 서버 인증 헤더로 사용
+      syncNow(); // 로그인 전 이 브라우저에 남아있던 localStorage 편집분을 서버로 동기화
     } else {
       setPasswordError(isEn ? 'Incorrect password.' : '비밀번호가 일치하지 않습니다.');
     }

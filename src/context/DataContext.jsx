@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { brands as initialBrands } from '../data/brands';
 import { products as initialProducts } from '../data/products';
 
@@ -21,6 +21,24 @@ const defaultSiteSettings = {
   heroImage: './assets/hero_slide_4.jpg'
 };
 
+// 관리자 페이지에서 저장한 데이터를 모두가 볼 수 있도록 서버(Cloudflare KV)에도 동기화한다.
+// /api/data가 없는 환경(예: 순수 vite dev 서버)에서는 조용히 무시되고 기존 localStorage 방식 그대로 동작한다.
+async function persistToServer(partial) {
+  try {
+    const password = sessionStorage.getItem('admin_pw');
+    if (!password) return; // 관리자로 로그인한 상태가 아니면 서버에 쓰지 않음
+    const res = await fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+      body: JSON.stringify(partial)
+    });
+    if (!res.ok) throw new Error(`save failed: ${res.status}`);
+  } catch (err) {
+    console.error('서버 저장 실패 - 이 브라우저에는 반영되었지만 다른 방문자에게는 보이지 않을 수 있습니다.', err);
+    window.alert('서버 저장에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해 주세요.');
+  }
+}
+
 export function DataProvider({ children }) {
   const [brands, setBrands] = useState(() => {
     const saved = localStorage.getItem(BRANDS_KEY);
@@ -37,6 +55,8 @@ export function DataProvider({ children }) {
     return saved ? { ...defaultSiteSettings, ...JSON.parse(saved) } : defaultSiteSettings;
   });
 
+  const hydrated = useRef(false);
+
   useEffect(() => {
     localStorage.setItem(BRANDS_KEY, JSON.stringify(brands));
   }, [brands]);
@@ -49,32 +69,85 @@ export function DataProvider({ children }) {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(siteSettings));
   }, [siteSettings]);
 
+  // 최초 마운트 시 서버(KV) 데이터를 가져와 로컬 상태에 반영한다.
+  // (관리자 로그인 여부와 무관하게 모든 방문자가 실행 - GET은 인증이 필요 없음)
+  useEffect(() => {
+    if (hydrated.current) return;
+    hydrated.current = true;
+
+    fetch('/api/data')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((server) => {
+        if (!server) return;
+        if (server.brands) setBrands(server.brands);
+        if (server.products) setProducts(server.products);
+        if (server.siteSettings) setSiteSettings({ ...defaultSiteSettings, ...server.siteSettings });
+      })
+      .catch(() => {
+        // /api/data 자체가 없는 환경(예: 순수 vite dev) - 기존 localStorage 동작 유지
+      });
+  }, []);
+
+  // 관리자가 로그인한 직후 호출 - 이 브라우저에 남아있던 localStorage 데이터(로그인 전에는 서버에
+  // 반영되지 않았을 수 있는 이전 테스트 편집분 포함)를 서버로 밀어 올려 모든 방문자에게 반영되게 한다.
+  const syncNow = () => {
+    persistToServer({ brands, products, siteSettings });
+  };
+
   const addBrand = (newBrand) => {
-    setBrands(prev => [newBrand, ...prev]);
+    setBrands((prev) => {
+      const next = [newBrand, ...prev];
+      persistToServer({ brands: next });
+      return next;
+    });
   };
 
   const deleteBrand = (id) => {
-    setBrands(prev => prev.filter(b => b.id !== id));
+    setBrands((prev) => {
+      const next = prev.filter((b) => b.id !== id);
+      persistToServer({ brands: next });
+      return next;
+    });
   };
 
   const updateBrand = (id, updates) => {
-    setBrands(prev => prev.map(b => b.id === id ? { ...b, ...updates } : b));
+    setBrands((prev) => {
+      const next = prev.map((b) => (b.id === id ? { ...b, ...updates } : b));
+      persistToServer({ brands: next });
+      return next;
+    });
   };
 
   const addProduct = (newProduct) => {
-    setProducts(prev => [newProduct, ...prev]);
+    setProducts((prev) => {
+      const next = [newProduct, ...prev];
+      persistToServer({ products: next });
+      return next;
+    });
   };
 
   const deleteProduct = (id) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+    setProducts((prev) => {
+      const next = prev.filter((p) => p.id !== id);
+      persistToServer({ products: next });
+      return next;
+    });
   };
 
   const updateProduct = (id, updates) => {
-    setProducts(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+    setProducts((prev) => {
+      const next = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
+      persistToServer({ products: next });
+      return next;
+    });
   };
 
   const updateSiteSettings = (updates) => {
-    setSiteSettings(prev => ({ ...prev, ...updates }));
+    setSiteSettings((prev) => {
+      const next = { ...prev, ...updates };
+      persistToServer({ siteSettings: next });
+      return next;
+    });
   };
 
   const resetData = () => {
@@ -84,12 +157,13 @@ export function DataProvider({ children }) {
     localStorage.removeItem(BRANDS_KEY);
     localStorage.removeItem(PRODUCTS_KEY);
     localStorage.removeItem(SETTINGS_KEY);
+    persistToServer({ brands: initialBrands, products: initialProducts, siteSettings: defaultSiteSettings });
   };
 
   return (
     <DataContext.Provider value={{
       brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData,
-      siteSettings, updateSiteSettings
+      siteSettings, updateSiteSettings, syncNow
     }}>
       {children}
     </DataContext.Provider>

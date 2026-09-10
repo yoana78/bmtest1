@@ -1,0 +1,7 @@
+name = "bmtest1"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-10"
+
+[[kv_namespaces]]
+binding = "SITE_DATA"
+id = "0accce824c1a4a1597bf4c3690103fc5"
