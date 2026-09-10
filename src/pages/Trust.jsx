@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { partners } from '../data/partners';
+import { petDistributors } from '../data/petDistributors';
 import { expoPhotos } from '../data/expo';
 
 export default function Trust() {
@@ -400,6 +401,43 @@ export default function Trust() {
                 <span style={{ fontSize: '0.82rem', color: '#666', marginTop: '4px', fontWeight: 500 }}>
                   {isEn ? p.nameEn : p.nameKo}
                 </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pet Specialty Retail Partners */}
+      <section className="daesang-white-section" style={{ background: expoYearGroups.length % 2 === 0 ? '#F8F9FA' : undefined, borderTop: '1px solid #EAEAEA' }}>
+        <div className="daesang-container-wide">
+          <span className="daesang-brand-num">PARTNERSHIP</span>
+          <h2 className="daesang-section-h2">{isEn ? 'Boomyung\'s Pet Specialty Retail Partners' : '부명과 함께하는 국내 펫 전문 유통사'}</h2>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '20px', marginTop: '30px' }}>
+            {petDistributors.map(p => (
+              <div
+                key={p.id}
+                style={{
+                  background: '#FFFFFF',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: '10px',
+                  padding: '10px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: '110px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
+                }}
+              >
+                {p.logo && (
+                  <>
+                    <img src={p.logo} alt={p.nameKo} style={{ maxHeight: '70px', maxWidth: '100%', objectFit: 'contain' }} />
+                    <span style={{ fontSize: '0.82rem', color: '#666', marginTop: '4px', fontWeight: 500 }}>
+                      {isEn ? p.nameEn : p.nameKo}
+                    </span>
+                  </>
+                )}
               </div>
             ))}
           </div>

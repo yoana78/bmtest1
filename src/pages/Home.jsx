@@ -56,7 +56,7 @@ export default function Home() {
     },
     {
       tag: isEn ? '04 — Distribution' : '04 — 유통',
-      title: isEn ? 'From our floor to shelves nationwide.' : '물류센터에서 전국 매대까지',
+      title: isEn ? 'From our floor to the global market.' : '물류센터에서 글로벌 시장까지',
       body: isEn
         ? 'An integrated logistics centre keeps inventory accurate and delivery fast, supplying 20+ major retail channels across Korea and export partners abroad.'
         : '통합 물류센터가 재고를 정확하게, 배송을 빠르게 유지합니다. 국내 20개 이상 유통 채널과 해외 수출 파트너에 공급합니다.',
@@ -120,7 +120,7 @@ export default function Home() {
           <Reveal as="h2" style={{ whiteSpace: 'nowrap', maxWidth: 'none' }}>
             {isEn ? 'Four brands, one standard.' : '네 개의 브랜드, 하나의 기준'}
           </Reveal>
-          <Reveal as="p" delay={1}>
+          <Reveal as="p" delay={1} style={{ whiteSpace: 'nowrap', maxWidth: 'none' }}>
             {isEn
               ? 'Premium brands tailored to your pet’s health and lifestyle.'
               : '반려동물의 건강과 라이프 스타일에 따른 프리미엄 브랜드'}
@@ -166,7 +166,7 @@ export default function Home() {
       <section id="network" className="cine-section tight">
         <div className="cine-head">
           <Reveal as="h2">
-            {isEn ? 'Korea\'s Leading Retail Partners' : '국내 초대형 유통사'}
+            {isEn ? 'Boomyung\'s Leading Retail Partners' : '부명과 함께하는 국내 대형 유통 파트너'}
           </Reveal>
           <Reveal as="p" delay={1}>
             {isEn
@@ -190,7 +190,12 @@ export default function Home() {
       <section className="cine-section tight">
         <div className="cine-head">
           <Reveal as="h2">
-            {isEn ? 'Leading Pet Specialty Retailers in Korea' : '국내 대형 펫 전문 유통사'}
+            {isEn ? 'Boomyung\'s Pet Specialty Retail Partners' : '부명과 함께하는 국내 펫 전문 유통사'}
+          </Reveal>
+          <Reveal as="p" delay={1}>
+            {isEn
+              ? 'Supplying verified products to leading pet specialty retail channels in Korea, including THEKICO, SUJINPET and Dog&Cat Paradise.'
+              : '더키코, 수진펫, 야옹아멍멍해봐 등 국내 대형 펫 유통 채널에 검증된 제품을 공급합니다.'}
           </Reveal>
         </div>
         <div className="pet-distributor-grid">
