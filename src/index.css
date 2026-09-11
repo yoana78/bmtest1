@@ -1623,3 +1623,8 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
   .cine-head { margin-bottom: 40px; }
   .pd-fact { grid-template-columns: 100px 1fr; }
 }
+
+/* 아무도없개 로고가 다른 유통사 로고 대비 작아 보여서 20% 확대 */
+img[alt="아무도없개"] {
+  transform: scale(1.2);
+}
