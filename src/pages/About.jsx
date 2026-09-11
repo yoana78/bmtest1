@@ -14,6 +14,10 @@ const homadImages = [
   './assets/homad/homad_04.jpg'
 ];
 
+const qingdaoImages = [
+  './assets/china/qingdao-factory.jpg'
+];
+
 export default function About() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
@@ -239,7 +243,7 @@ export default function About() {
               </div>
             </div>
 
-            <div className="daesang-trust-card">
+            <div className="daesang-trust-card" onClick={() => setGalleryImages(qingdaoImages)} style={{ cursor: 'pointer' }}>
               <span className="trust-code">GLOBAL NETWORK</span>
               <h3>{isEn ? 'Qingdao Plant' : '칭다오 공장'}</h3>
               <p>
