@@ -21,17 +21,42 @@ const defaultSiteSettings = {
   heroImage: './assets/hero_slide_4.jpg'
 };
 
-// 관리자 페이지에서 저장한 데이터를 모두가 볼 수 있도록 서버(Cloudflare KV)에도 동기화한다.
-// /api/data가 없는 환경(예: 순수 vite dev 서버)에서는 조용히 무시되고 기존 localStorage 방식 그대로 동작한다.
-async function persistToServer(partial) {
+// 관리자 페이지에서 저장한 데이터를 모두가 볼 수 있도록 서버(D1)에도 동기화한다.
+// D1로 옮기면서 /api/data 통짜 저장 방식 대신 브랜드/제품 각각을 개별 엔드포인트로
+// 저장한다 (homepage와 동일한 구조) — /api/data는 이제 공개 조회 전용 GET만 지원.
+function authHeaders() {
+  const password = sessionStorage.getItem('admin_pw');
+  return { 'Content-Type': 'application/json', ...(password ? { Authorization: `Bearer ${password}` } : {}) };
+}
+
+async function persistBrand(method, id, body) {
   try {
-    const password = sessionStorage.getItem('admin_pw');
-    if (!password) return; // 관리자로 로그인한 상태가 아니면 서버에 쓰지 않음
-    const res = await fetch('/api/data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
-      body: JSON.stringify(partial)
-    });
+    if (!sessionStorage.getItem('admin_pw')) return; // 관리자로 로그인한 상태가 아니면 서버에 쓰지 않음
+    const url = method === 'POST' ? '/api/brands' : `/api/brands/${encodeURIComponent(id)}`;
+    const res = await fetch(url, { method, headers: authHeaders(), body: body !== undefined ? JSON.stringify(body) : undefined });
+    if (!res.ok) throw new Error(`save failed: ${res.status}`);
+  } catch (err) {
+    console.error('서버 저장 실패 - 이 브라우저에는 반영되었지만 다른 방문자에게는 보이지 않을 수 있습니다.', err);
+    window.alert('서버 저장에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해 주세요.');
+  }
+}
+
+async function persistProduct(method, id, body) {
+  try {
+    if (!sessionStorage.getItem('admin_pw')) return;
+    const url = method === 'POST' ? '/api/products' : `/api/products/${encodeURIComponent(id)}`;
+    const res = await fetch(url, { method, headers: authHeaders(), body: body !== undefined ? JSON.stringify(body) : undefined });
+    if (!res.ok) throw new Error(`save failed: ${res.status}`);
+  } catch (err) {
+    console.error('서버 저장 실패 - 이 브라우저에는 반영되었지만 다른 방문자에게는 보이지 않을 수 있습니다.', err);
+    window.alert('서버 저장에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해 주세요.');
+  }
+}
+
+async function persistSettings(updates) {
+  try {
+    if (!sessionStorage.getItem('admin_pw')) return;
+    const res = await fetch('/api/settings', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(updates) });
     if (!res.ok) throw new Error(`save failed: ${res.status}`);
   } catch (err) {
     console.error('서버 저장 실패 - 이 브라우저에는 반영되었지만 다른 방문자에게는 보이지 않을 수 있습니다.', err);
@@ -88,82 +113,76 @@ export function DataProvider({ children }) {
       });
   }, []);
 
-  // 관리자가 로그인한 직후 호출 - 이 브라우저에 남아있던 localStorage 데이터(로그인 전에는 서버에
-  // 반영되지 않았을 수 있는 이전 테스트 편집분 포함)를 서버로 밀어 올려 모든 방문자에게 반영되게 한다.
-  const syncNow = () => {
-    persistToServer({ brands, products, siteSettings });
-  };
+  // D1로 옮기면서 "통짜 동기화" 개념 자체가 없어짐 - 각 편집이 그 즉시 개별
+  // 엔드포인트로 저장되므로, 로그인 시점에 따로 밀어 올릴 것이 없다. 기존
+  // 호출부(Admin.jsx)만 건드리지 않도록 시그니처는 남겨둔다.
+  const syncNow = () => {};
 
   const addBrand = (newBrand) => {
-    setBrands((prev) => {
-      const next = [newBrand, ...prev];
-      persistToServer({ brands: next });
-      return next;
-    });
+    setBrands((prev) => [newBrand, ...prev]);
+    persistBrand('POST', null, newBrand);
   };
 
   const deleteBrand = (id) => {
-    setBrands((prev) => {
-      const next = prev.filter((b) => b.id !== id);
-      persistToServer({ brands: next });
-      return next;
-    });
+    setBrands((prev) => prev.filter((b) => b.id !== id));
+    persistBrand('DELETE', id);
   };
 
   const updateBrand = (id, updates) => {
-    setBrands((prev) => {
-      const next = prev.map((b) => (b.id === id ? { ...b, ...updates } : b));
-      persistToServer({ brands: next });
-      return next;
-    });
+    setBrands((prev) => prev.map((b) => (b.id === id ? { ...b, ...updates } : b)));
+    persistBrand('PUT', id, updates);
   };
 
   const addProduct = (newProduct) => {
-    setProducts((prev) => {
-      const next = [newProduct, ...prev];
-      persistToServer({ products: next });
-      return next;
-    });
+    setProducts((prev) => [newProduct, ...prev]);
+    persistProduct('POST', null, newProduct);
   };
 
   const deleteProduct = (id) => {
-    setProducts((prev) => {
-      const next = prev.filter((p) => p.id !== id);
-      persistToServer({ products: next });
-      return next;
-    });
+    setProducts((prev) => prev.filter((p) => p.id !== id));
+    persistProduct('DELETE', id);
   };
 
   const updateProduct = (id, updates) => {
-    setProducts((prev) => {
-      const next = prev.map((p) => (p.id === id ? { ...p, ...updates } : p));
-      persistToServer({ products: next });
-      return next;
-    });
+    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, ...updates } : p)));
+    persistProduct('PUT', id, updates);
   };
 
   const updateSiteSettings = (updates) => {
-    setSiteSettings((prev) => {
-      const next = { ...prev, ...updates };
-      persistToServer({ siteSettings: next });
-      return next;
-    });
+    setSiteSettings((prev) => ({ ...prev, ...updates }));
+    persistSettings(updates);
   };
 
-  const resetData = () => {
-    setBrands(initialBrands);
-    setProducts(initialProducts);
-    setSiteSettings(defaultSiteSettings);
-    localStorage.removeItem(BRANDS_KEY);
-    localStorage.removeItem(PRODUCTS_KEY);
-    localStorage.removeItem(SETTINGS_KEY);
-    persistToServer({ brands: initialBrands, products: initialProducts, siteSettings: defaultSiteSettings });
+  const resetData = async () => {
+    try {
+      if (!sessionStorage.getItem('admin_pw')) return;
+      const res = await fetch('/api/reset', { method: 'POST', headers: authHeaders() });
+      if (!res.ok) throw new Error('reset failed');
+      const data = await fetch('/api/data').then((r) => r.json());
+      setBrands(data.brands || initialBrands);
+      setProducts(data.products || initialProducts);
+      setSiteSettings({ ...defaultSiteSettings, ...(data.siteSettings || {}) });
+      localStorage.removeItem(BRANDS_KEY);
+      localStorage.removeItem(PRODUCTS_KEY);
+      localStorage.removeItem(SETTINGS_KEY);
+    } catch (err) {
+      console.error('초기화 실패', err);
+      window.alert('초기화에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해 주세요.');
+    }
+  };
+
+  // 이미지 파일을 서버에 업로드하고, 모든 방문자에게 보이는 공개 URL(/api/images/:id)을 돌려받음
+  const uploadImage = async (dataUrl) => {
+    const res = await fetch('/api/upload', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ dataUrl }) });
+    if (!res.ok) throw new Error((await res.json()).error || '이미지 업로드 실패');
+    const { url } = await res.json();
+    return url;
   };
 
   return (
     <DataContext.Provider value={{
       brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData,
-      siteSettings, updateSiteSettings, syncNow
+      siteSettings, updateSiteSettings, syncNow, uploadImage
     }}>
       {children}
     </DataContext.Provider>

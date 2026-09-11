@@ -1,31 +1,19 @@
-const KEYS = ['brands', 'products', 'siteSettings'];
+// GET /api/data — 누구나 접근 가능한 공개 읽기 엔드포인트.
+// 브랜드/제품/사이트설정을 한 번에 내려줘서, 홈페이지가 로드될 때 이 응답으로 화면을 채운다.
+export async function onRequestGet(context) {
+  const { env } = context;
 
-export async function onRequestGet({ env }) {
-  const entries = await Promise.all(KEYS.map((key) => env.SITE_DATA.get(key)));
-  const result = {};
-  KEYS.forEach((key, i) => {
-    result[key] = entries[i] ? JSON.parse(entries[i]) : null;
+  const [brandsResult, productsResult, settingsResult] = await Promise.all([
+    env.DB.prepare('SELECT data FROM brands ORDER BY position ASC').all(),
+    env.DB.prepare('SELECT data FROM products ORDER BY position ASC').all(),
+    env.DB.prepare('SELECT data FROM site_settings WHERE key = ?').bind('settings').first()
+  ]);
+
+  const brands = brandsResult.results.map(row => JSON.parse(row.data));
+  const products = productsResult.results.map(row => JSON.parse(row.data));
+  const siteSettings = settingsResult ? JSON.parse(settingsResult.data) : {};
+
+  return Response.json({ brands, products, siteSettings }, {
+    headers: { 'Cache-Control': 'no-store' }
   });
-  return Response.json(result);
-}
-
-export async function onRequestPost({ request, env }) {
-  const password = request.headers.get('x-admin-password');
-  if (!env.ADMIN_PASSWORD || password !== env.ADMIN_PASSWORD) {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return new Response('Invalid JSON body', { status: 400 });
-  }
-
-  const writes = KEYS
-    .filter((key) => body[key] !== undefined)
-    .map((key) => env.SITE_DATA.put(key, JSON.stringify(body[key])));
-
-  await Promise.all(writes);
-  return Response.json({ ok: true });
 }

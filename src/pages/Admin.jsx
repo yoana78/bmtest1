@@ -2,13 +2,61 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import { useLanguage } from '../i18n/LanguageContext';
 
+// 업로드한 이미지를 D1에 저장하기 전에 용량을 줄인다 (D1 행 크기 제한 대비).
+// PNG(투명 배경)는 PNG로, 그 외는 용량이 훨씬 작은 JPEG로 인코딩.
+function compressImage(file, { maxDimension = 1600, startQuality = 0.85, maxBase64Length = 850000 } = {}) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      if (width > maxDimension || height > maxDimension) {
+        const scale = maxDimension / Math.max(width, height);
+        width = Math.round(width * scale);
+        height = Math.round(height * scale);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const keepPng = file.type === 'image/png';
+      let quality = startQuality;
+      let dataUrl = canvas.toDataURL(keepPng ? 'image/png' : 'image/jpeg', quality);
+
+      while (dataUrl.length > maxBase64Length && quality > 0.3) {
+        quality -= 0.1;
+        if (keepPng) {
+          canvas.width = Math.round(canvas.width * 0.85);
+          canvas.height = Math.round(canvas.height * 0.85);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          dataUrl = canvas.toDataURL('image/png');
+        } else {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+      }
+      resolve(dataUrl);
+    };
+    img.onerror = reject;
+    img.src = objectUrl;
+  });
+}
+
 export default function Admin() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
   const {
     brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData,
-    siteSettings, updateSiteSettings, syncNow
+    siteSettings, updateSiteSettings, syncNow, uploadImage
   } = useData();
+
+  // 파일을 압축한 뒤 서버(/api/upload)에 업로드하고, 모든 방문자에게 보이는 공개 URL을 돌려받는 공용 헬퍼
+  const readAndUpload = async (file) => {
+    const dataUrl = await compressImage(file);
+    return uploadImage(dataUrl);
+  };
   const [productFilterBrand, setProductFilterBrand] = useState('');
   const [productSearch, setProductSearch] = useState('');
   const [settingsEmail, setSettingsEmail] = useState(siteSettings.contactEmail);
@@ -102,21 +150,25 @@ export default function Admin() {
   };
 
   // Handle Logo Upload
-  const handleLogoUpload = (e) => {
+  const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setBrandForm(prev => ({ ...prev, logo: reader.result }));
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const url = await readAndUpload(file);
+      setBrandForm(prev => ({ ...prev, logo: url }));
+    } catch (err) {
+      alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
     }
   };
 
-  const handleEditBrandLogoUpload = (e) => {
+  const handleEditBrandLogoUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setEditBrandForm(prev => ({ ...prev, logo: reader.result }));
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const url = await readAndUpload(file);
+      setEditBrandForm(prev => ({ ...prev, logo: url }));
+    } catch (err) {
+      alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
     }
   };
 
@@ -155,35 +207,38 @@ export default function Admin() {
   };
 
   // Handle Product Image Upload
-  const handleProductImageUpload = (e) => {
+  const handleProductImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setProductForm(prev => ({ ...prev, image: reader.result }));
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const url = await readAndUpload(file);
+      setProductForm(prev => ({ ...prev, image: url }));
+    } catch (err) {
+      alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
     }
   };
 
-  const handleEditImageUpload = (e) => {
+  const handleEditImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setEditForm(prev => ({ ...prev, image: reader.result }));
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const url = await readAndUpload(file);
+      setEditForm(prev => ({ ...prev, image: url }));
+    } catch (err) {
+      alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
     }
   };
 
   // 상세 이미지 여러 장 업로드 - 기존 목록 뒤에 이어붙임 (setter를 받아 등록/수정 폼 양쪽에서 재사용)
-  const handleInfoImagesUpload = (e, setter) => {
+  const handleInfoImagesUpload = async (e, setter) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    Promise.all(files.map(file => new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(file);
-    }))).then(dataUrls => {
-      setter(prev => ({ ...prev, infoImages: [...prev.infoImages, ...dataUrls] }));
-    });
+    try {
+      const urls = await Promise.all(files.map(readAndUpload));
+      setter(prev => ({ ...prev, infoImages: [...prev.infoImages, ...urls] }));
+    } catch (err) {
+      alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
+    }
   };
 
   const handleRemoveInfoImage = (idx, setter) => {
@@ -245,16 +300,16 @@ export default function Admin() {
   };
 
   // 홈 화면 인트로 히어로 사진 교체 업로드
-  const handleHeroImageUpload = (e) => {
+  const handleHeroImageUpload = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        updateSiteSettings({ heroImage: reader.result });
-        setSuccessMsg(isEn ? 'Hero image updated!' : '히어로 이미지가 변경되었습니다!');
-        setTimeout(() => setSuccessMsg(''), 4000);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const url = await readAndUpload(file);
+      updateSiteSettings({ heroImage: url });
+      setSuccessMsg(isEn ? 'Hero image updated!' : '히어로 이미지가 변경되었습니다!');
+      setTimeout(() => setSuccessMsg(''), 4000);
+    } catch (err) {
+      alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
     }
   };
 
