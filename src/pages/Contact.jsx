@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useData } from '../context/DataContext';
-import { brands } from '../data/brands';
 
 export default function Contact() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
-  const { siteSettings } = useData();
+  const { siteSettings, brands } = useData();
 
   const [formData, setFormData] = useState({
     company: '',

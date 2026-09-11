@@ -31,7 +31,7 @@ const BrandDetail = () => {
             <img src={brand.logo} alt={isEn ? brand.nameEn : brand.nameKo} style={{ height: '48px', objectFit: 'contain', background: '#FFFFFF', borderRadius: '8px', padding: '8px 14px', marginBottom: '16px' }} />
           ) : null}
           <h1>{isEn ? brand.nameEn : brand.nameKo}</h1>
-          <p>{brand.tagline}</p>
+          <p>{isEn ? (brand.taglineEn || brand.tagline) : brand.tagline}</p>
         </div>
       </section>
 

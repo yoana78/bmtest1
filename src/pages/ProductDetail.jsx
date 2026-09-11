@@ -6,6 +6,15 @@ import Reveal from '../components/Reveal';
 
 const categoryEnMap = { '사료': 'Feed', '간식': 'Treats', '모래': 'Litter', '용품': 'Supplies' };
 const petTypeEnMap = { dog: 'Dog', cat: 'Cat' };
+const nutritionLabelMap = {
+  protein: { ko: '조단백', en: 'Crude Protein' },
+  fat: { ko: '조지방', en: 'Crude Fat' },
+  fiber: { ko: '조섬유', en: 'Crude Fiber' },
+  moisture: { ko: '수분', en: 'Moisture' },
+  ash: { ko: '조회분', en: 'Crude Ash' },
+  calcium: { ko: '칼슘', en: 'Calcium' },
+  phosphorus: { ko: '인', en: 'Phosphorus' }
+};
 
 export default function ProductDetail() {
   const { productId } = useParams();
@@ -127,13 +136,13 @@ export default function ProductDetail() {
           )}
         </Reveal>
 
-        {product.nutrition && (
+        {product.nutrition && (product.category === '사료' || product.category === '간식') && (
           <Reveal className="pd-block">
             <h3>{isEn ? 'Guaranteed analysis' : '등록 성분량'}</h3>
             <dl className="pd-nutri">
               {Object.entries(product.nutrition).map(([k, v]) => (
                 <div key={k}>
-                  <dt>{k}</dt>
+                  <dt>{nutritionLabelMap[k] ? (isEn ? nutritionLabelMap[k].en : nutritionLabelMap[k].ko) : k}</dt>
                   <dd>{v}</dd>
                 </div>
               ))}

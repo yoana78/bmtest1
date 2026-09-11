@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useData } from '../context/DataContext';
-import { brands } from '../data/brands';
 import { partners } from '../data/partners';
 import { petDistributors } from '../data/petDistributors';
 import CineSticky from '../components/CineSticky';
@@ -12,7 +11,7 @@ import Reveal from '../components/Reveal';
 export default function Home() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
-  const { siteSettings } = useData(); // 관리자 페이지 "사이트 설정" 탭에서 등록한 인트로 히어로 사진
+  const { siteSettings, brands } = useData(); // 관리자 페이지 "사이트 설정" 탭에서 등록한 인트로 히어로 사진 + 실시간 브랜드 목록(D1)
   const ownBrands = brands.filter((b) => b.type === 'own');
   const importedBrands = brands.filter((b) => b.type === 'imported');
 

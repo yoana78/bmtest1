@@ -119,7 +119,7 @@ export function DataProvider({ children }) {
   const syncNow = () => {};
 
   const addBrand = (newBrand) => {
-    setBrands((prev) => [newBrand, ...prev]);
+    setBrands((prev) => [...prev, newBrand]);
     persistBrand('POST', null, newBrand);
   };
 
@@ -134,7 +134,7 @@ export function DataProvider({ children }) {
   };
 
   const addProduct = (newProduct) => {
-    setProducts((prev) => [newProduct, ...prev]);
+    setProducts((prev) => [...prev, newProduct]);
     persistProduct('POST', null, newProduct);
   };
 

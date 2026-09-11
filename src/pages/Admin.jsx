@@ -11,9 +11,12 @@ function compressImage(file, { maxDimension = 1600, startQuality = 0.85, maxBase
     img.onload = () => {
       URL.revokeObjectURL(objectUrl);
       let { width, height } = img;
-      if (width > maxDimension || height > maxDimension) {
-        const scale = maxDimension / Math.max(width, height);
-        width = Math.round(width * scale);
+      // "긴 쪽" 기준이 아니라 가로 폭 기준으로만 1차 축소한다 — 세로로 아주 긴 상세페이지
+      // 인포그래픽(예: 800x6563)을 긴 쪽(세로) 기준으로 줄이면 가로 폭이 200px 밑으로 떨어져
+      // 글자를 알아볼 수 없게 된다.
+      if (width > maxDimension) {
+        const scale = maxDimension / width;
+        width = maxDimension;
         height = Math.round(height * scale);
       }
       const canvas = document.createElement('canvas');
@@ -26,13 +29,13 @@ function compressImage(file, { maxDimension = 1600, startQuality = 0.85, maxBase
       let quality = startQuality;
       let dataUrl = canvas.toDataURL(keepPng ? 'image/png' : 'image/jpeg', quality);
 
-      while (dataUrl.length > maxBase64Length && quality > 0.3) {
-        quality -= 0.1;
-        if (keepPng) {
+      while (dataUrl.length > maxBase64Length && (quality > 0.3 || canvas.width > 300)) {
+        if (quality > 0.3) quality -= 0.1;
+        if (keepPng || quality <= 0.3) {
           canvas.width = Math.round(canvas.width * 0.85);
           canvas.height = Math.round(canvas.height * 0.85);
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          dataUrl = canvas.toDataURL('image/png');
+          dataUrl = canvas.toDataURL(keepPng ? 'image/png' : 'image/jpeg', keepPng ? undefined : quality);
         } else {
           dataUrl = canvas.toDataURL('image/jpeg', quality);
         }
@@ -42,6 +45,14 @@ function compressImage(file, { maxDimension = 1600, startQuality = 0.85, maxBase
     img.onerror = reject;
     img.src = objectUrl;
   });
+}
+
+// 카테고리가 "사료"/"간식"일 때만 등록 성분량(조단백/조지방/조섬유/수분)을 저장한다.
+const CATEGORIES_WITH_NUTRITION = ['사료', '간식'];
+function buildNutrition(category, { protein, fat, fiber, moisture }) {
+  if (!CATEGORIES_WITH_NUTRITION.includes(category)) return undefined;
+  if (!protein && !fat && !fiber && !moisture) return undefined;
+  return { protein, fat, fiber, moisture };
 }
 
 export default function Admin() {
@@ -75,6 +86,7 @@ export default function Admin() {
     nameEn: '',
     type: 'own', // 'own' = 브랜드 페이지, 'imported' = 수입브랜드 페이지
     tagline: '',
+    taglineEn: '',
     descriptionKo: '',
     descriptionEn: '',
     color: '#0066B3',
@@ -84,7 +96,7 @@ export default function Admin() {
   // 기존 브랜드 수정 팝업
   const [editingBrandId, setEditingBrandId] = useState(null);
   const [editBrandForm, setEditBrandForm] = useState({
-    nameKo: '', nameEn: '', type: 'own', tagline: '', descriptionKo: '', descriptionEn: '', color: '#0066B3', logo: ''
+    nameKo: '', nameEn: '', type: 'own', tagline: '', taglineEn: '', descriptionKo: '', descriptionEn: '', color: '#0066B3', logo: ''
   });
 
   // 2. Product Form State
@@ -102,15 +114,47 @@ export default function Admin() {
     ingredients: '',
     image: '',
     purchaseUrl: '',
-    infoImages: []
+    infoImages: [],
+    protein: '', fat: '', fiber: '', moisture: ''
   });
 
   // 기존 제품 수정 팝업
   const [editingProductId, setEditingProductId] = useState(null);
+  const [editingProductOriginal, setEditingProductOriginal] = useState(null);
   const [editForm, setEditForm] = useState({
     nameKo: '', nameEn: '', brandId: '', category: '사료', petType: 'dog', code: '', spec: '',
-    shelfLife: '', origin: '', features: '', ingredients: '', image: '', purchaseUrl: '', infoImages: []
+    shelfLife: '', origin: '', features: '', ingredients: '', image: '', purchaseUrl: '', infoImages: [],
+    protein: '', fat: '', fiber: '', moisture: ''
   });
+
+  // 관리자 저장 시 한국어 필드를 영문으로 자동 번역 (이미 값이 있으면 건드리지 않음)
+  const translateText = async (text) => {
+    if (!text || !text.trim()) return '';
+    try {
+      const token = sessionStorage.getItem('admin_pw') || '';
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ text })
+      });
+      if (!res.ok) return '';
+      const { translated } = await res.json();
+      return translated || '';
+    } catch {
+      return '';
+    }
+  };
+
+  const translateProductFields = async ({ nameKo, nameEn, origin, originEn, shelfLife, shelfLifeEn, ingredients, ingredientsEn, features, featuresEn }) => {
+    const [tNameEn, tOriginEn, tShelfLifeEn, tIngredientsEn, tFeaturesEn] = await Promise.all([
+      nameEn || translateText(nameKo),
+      originEn || translateText(origin),
+      shelfLifeEn || translateText(shelfLife),
+      ingredientsEn || translateText(ingredients),
+      featuresEn && featuresEn.length ? featuresEn : Promise.all((features || []).map(translateText))
+    ]);
+    return { nameEn: tNameEn, originEn: tOriginEn, shelfLifeEn: tShelfLifeEn, ingredientsEn: tIngredientsEn, featuresEn: tFeaturesEn };
+  };
 
   // Delete Brand
   const handleDeleteBrand = (brand) => {
@@ -179,6 +223,7 @@ export default function Admin() {
       nameEn: brand.nameEn || '',
       type: brand.type === 'imported' ? 'imported' : 'own',
       tagline: brand.tagline || '',
+      taglineEn: brand.taglineEn || '',
       descriptionKo: brand.descriptionKo || '',
       descriptionEn: brand.descriptionEn || '',
       color: brand.color || '#0066B3',
@@ -188,15 +233,18 @@ export default function Admin() {
 
   const handleCloseEditBrand = () => setEditingBrandId(null);
 
-  const handleSaveBrandEdit = (e) => {
+  const handleSaveBrandEdit = async (e) => {
     e.preventDefault();
+    const taglineEn = editBrandForm.taglineEn || await translateText(editBrandForm.tagline);
+    const descriptionEn = editBrandForm.descriptionEn || await translateText(editBrandForm.descriptionKo);
     updateBrand(editingBrandId, {
       nameKo: editBrandForm.nameKo,
       nameEn: editBrandForm.nameEn || editBrandForm.nameKo,
       type: editBrandForm.type,
       tagline: editBrandForm.tagline,
+      taglineEn,
       descriptionKo: editBrandForm.descriptionKo,
-      descriptionEn: editBrandForm.descriptionEn,
+      descriptionEn,
       color: editBrandForm.color,
       logo: editBrandForm.logo,
       hasLogo: !!editBrandForm.logo
@@ -247,6 +295,7 @@ export default function Admin() {
 
   const handleOpenEdit = (product) => {
     setEditingProductId(product.id);
+    setEditingProductOriginal(product);
     const rawFeatures = Array.isArray(product.features) ? product.features.join('\n') : (product.features || '');
     setEditForm({
       nameKo: product.nameKo || '',
@@ -262,18 +311,39 @@ export default function Admin() {
       ingredients: product.ingredients || '',
       image: product.image || '',
       purchaseUrl: product.purchaseUrl || '',
-      infoImages: Array.isArray(product.infoImages) ? product.infoImages : []
+      infoImages: Array.isArray(product.infoImages) ? product.infoImages : [],
+      protein: product.nutrition?.protein || '',
+      fat: product.nutrition?.fat || '',
+      fiber: product.nutrition?.fiber || '',
+      moisture: product.nutrition?.moisture || ''
     });
   };
 
   const handleCloseEdit = () => setEditingProductId(null);
 
-  const handleSaveProductEdit = (e) => {
+  const handleSaveProductEdit = async (e) => {
     e.preventDefault();
     const featuresArray = editForm.features ? editForm.features.split('\n').filter(f => f.trim()) : [];
+    const original = editingProductOriginal || {};
+    const translated = await translateProductFields({
+      nameKo: editForm.nameKo,
+      nameEn: editForm.nameEn || original.nameEn,
+      origin: editForm.origin,
+      originEn: original.originEn,
+      shelfLife: editForm.shelfLife,
+      shelfLifeEn: original.shelfLifeEn,
+      ingredients: editForm.ingredients,
+      ingredientsEn: original.ingredientsEn,
+      features: featuresArray,
+      featuresEn: original.featuresEn
+    });
     updateProduct(editingProductId, {
       nameKo: editForm.nameKo,
-      nameEn: editForm.nameEn || editForm.nameKo,
+      nameEn: translated.nameEn || editForm.nameKo,
+      originEn: translated.originEn,
+      shelfLifeEn: translated.shelfLifeEn,
+      ingredientsEn: translated.ingredientsEn,
+      featuresEn: translated.featuresEn,
       brandId: editForm.brandId,
       category: editForm.category,
       petType: editForm.petType,
@@ -285,7 +355,8 @@ export default function Admin() {
       ingredients: editForm.ingredients,
       image: editForm.image,
       purchaseUrl: editForm.purchaseUrl.trim(),
-      infoImages: editForm.infoImages
+      infoImages: editForm.infoImages,
+      nutrition: buildNutrition(editForm.category, editForm) || null
     });
     setSuccessMsg(isEn ? 'Product updated successfully!' : '제품 정보가 수정되었습니다!');
     handleCloseEdit();
@@ -314,7 +385,7 @@ export default function Admin() {
   };
 
   // Submit Brand
-  const handleBrandSubmit = (e) => {
+  const handleBrandSubmit = async (e) => {
     e.preventDefault();
     if (!brandForm.nameKo) {
       alert(isEn ? 'Please enter brand name.' : '브랜드 이름을 입력해 주세요.');
@@ -325,16 +396,20 @@ export default function Admin() {
       ? brandForm.nameEn.toLowerCase().replace(/[^a-z0-9]/g, '')
       : `brand_${Date.now()}`;
 
+    const taglineEn = brandForm.taglineEn || (await translateText(brandForm.tagline)) || 'Total Care for Pet Life';
+    const descriptionEn = brandForm.descriptionEn || (await translateText(brandForm.descriptionKo)) || 'Premium Pet Care Brand';
+
     const newBrand = {
       id,
       nameKo: brandForm.nameKo,
       nameEn: brandForm.nameEn || brandForm.nameKo,
       type: brandForm.type,
       tagline: brandForm.tagline || 'Total Care for Pet Life',
+      taglineEn,
       logo: brandForm.logo || '',
       hasLogo: !!brandForm.logo,
       descriptionKo: brandForm.descriptionKo || '프리미엄 펫케어 브랜드',
-      descriptionEn: brandForm.descriptionEn || 'Premium Pet Care Brand',
+      descriptionEn,
       categories: [],
       color: brandForm.color || '#0066B3'
     };
@@ -343,14 +418,14 @@ export default function Admin() {
     setSuccessMsg(isEn ? `Brand "${newBrand.nameKo}" added successfully!` : `브랜드 "${newBrand.nameKo}" 등록이 완료되었습니다!`);
 
     setBrandForm({
-      nameKo: '', nameEn: '', type: 'own', tagline: '', descriptionKo: '', descriptionEn: '', color: '#0066B3', logo: ''
+      nameKo: '', nameEn: '', type: 'own', tagline: '', taglineEn: '', descriptionKo: '', descriptionEn: '', color: '#0066B3', logo: ''
     });
 
     setTimeout(() => setSuccessMsg(''), 4000);
   };
 
   // Submit Product
-  const handleProductSubmit = (e) => {
+  const handleProductSubmit = async (e) => {
     e.preventDefault();
     if (!productForm.nameKo) {
       alert(isEn ? 'Please enter product name.' : '제품명을 입력해 주세요.');
@@ -364,12 +439,29 @@ export default function Admin() {
     const id = `product-${Date.now()}`;
     const featuresArray = productForm.features
       ? productForm.features.split('\n').filter(f => f.trim())
-      : ['고품질 원료 사용', '엄격한 품질 관리'];
+      : [];
+
+    const translated = await translateProductFields({
+      nameKo: productForm.nameKo,
+      nameEn: productForm.nameEn,
+      origin: productForm.origin,
+      originEn: '',
+      shelfLife: productForm.shelfLife,
+      shelfLifeEn: '',
+      ingredients: productForm.ingredients,
+      ingredientsEn: '',
+      features: featuresArray,
+      featuresEn: null
+    });
 
     const newProduct = {
       id,
       nameKo: productForm.nameKo,
-      nameEn: productForm.nameEn || productForm.nameKo,
+      nameEn: translated.nameEn || productForm.nameKo,
+      originEn: translated.originEn,
+      shelfLifeEn: translated.shelfLifeEn,
+      ingredientsEn: translated.ingredientsEn,
+      featuresEn: translated.featuresEn,
       brandId: productForm.brandId,
       code: productForm.code || '',
       spec: productForm.spec || '규격 정보 참조',
@@ -381,7 +473,8 @@ export default function Admin() {
       petType: productForm.petType,
       image: productForm.image || '',
       purchaseUrl: productForm.purchaseUrl.trim(),
-      infoImages: productForm.infoImages
+      infoImages: productForm.infoImages,
+      nutrition: buildNutrition(productForm.category, productForm) || null
     };
 
     addProduct(newProduct);
@@ -389,7 +482,8 @@ export default function Admin() {
 
     setProductForm({
       nameKo: '', nameEn: '', brandId: brands[0]?.id || '', category: '사료', petType: 'dog', code: '', spec: '',
-      shelfLife: '제조일로부터 18개월까지', origin: '대한민국', features: '', ingredients: '', image: '', purchaseUrl: '', infoImages: []
+      shelfLife: '제조일로부터 18개월까지', origin: '대한민국', features: '', ingredients: '', image: '', purchaseUrl: '', infoImages: [],
+      protein: '', fat: '', fiber: '', moisture: ''
     });
 
     setTimeout(() => setSuccessMsg(''), 4000);
@@ -569,6 +663,19 @@ export default function Admin() {
                   placeholder="예: Healthy & Happy Pet Care"
                   value={brandForm.tagline}
                   onChange={e => setBrandForm({ ...brandForm, tagline: e.target.value })}
+                  style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '1rem' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#374151' }}>
+                  {isEn ? 'Tagline (English)' : '브랜드 슬로건 (영문, 비워두면 자동 번역)'}
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Healthy & Happy Pet Care"
+                  value={brandForm.taglineEn}
+                  onChange={e => setBrandForm({ ...brandForm, taglineEn: e.target.value })}
                   style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '1rem' }}
                 />
               </div>
@@ -795,6 +902,26 @@ export default function Admin() {
                 <textarea rows={3} placeholder="사용된 상세 원료와 성분 정보를 작성해 주세요." value={productForm.ingredients} onChange={e => setProductForm({ ...productForm, ingredients: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
               </div>
 
+              {CATEGORIES_WITH_NUTRITION.includes(productForm.category) && (
+                <div>
+                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#374151' }}>
+                    {isEn ? 'Guaranteed Analysis (Nutrition)' : '등록 성분량'}
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
+                    <input type="text" placeholder="예: 24.0% (Min)" value={productForm.protein} onChange={e => setProductForm({ ...productForm, protein: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                    <input type="text" placeholder="예: 10.0% (Min)" value={productForm.fat} onChange={e => setProductForm({ ...productForm, fat: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                    <input type="text" placeholder="예: 5.0% (Max)" value={productForm.fiber} onChange={e => setProductForm({ ...productForm, fiber: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                    <input type="text" placeholder="예: 12.0% (Max)" value={productForm.moisture} onChange={e => setProductForm({ ...productForm, moisture: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px', marginTop: '4px', fontSize: '0.75rem', color: '#6B7280' }}>
+                    <span>{isEn ? 'Crude Protein' : '조단백'}</span>
+                    <span>{isEn ? 'Crude Fat' : '조지방'}</span>
+                    <span>{isEn ? 'Crude Fiber' : '조섬유'}</span>
+                    <span>{isEn ? 'Moisture' : '수분'}</span>
+                  </div>
+                </div>
+              )}
+
               <button type="submit" style={{ marginTop: '12px', padding: '16px', backgroundColor: '#0066B3', color: '#FFFFFF', fontSize: '1.1rem', fontWeight: '700', border: 'none', borderRadius: '8px', cursor: 'pointer', boxShadow: '0 4px 10px rgba(0, 102, 179, 0.2)' }}>
                 📦 {isEn ? 'Register Product' : '신규 제품 등록 완료'}
               </button>
@@ -943,6 +1070,13 @@ export default function Admin() {
                 {isEn ? 'Brand Tagline / Slogan' : '브랜드 슬로건 (Tagline)'}
               </label>
               <input type="text" value={editBrandForm.tagline} onChange={e => setEditBrandForm({ ...editBrandForm, tagline: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '1rem' }} />
+            </div>
+
+            <div>
+              <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#374151' }}>
+                {isEn ? 'Tagline (English)' : '브랜드 슬로건 (영문, 비워두면 자동 번역)'}
+              </label>
+              <input type="text" value={editBrandForm.taglineEn} onChange={e => setEditBrandForm({ ...editBrandForm, taglineEn: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '1rem' }} />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
@@ -1138,6 +1272,26 @@ export default function Admin() {
               </label>
               <textarea rows={3} value={editForm.ingredients} onChange={e => setEditForm({ ...editForm, ingredients: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
             </div>
+
+            {CATEGORIES_WITH_NUTRITION.includes(editForm.category) && (
+              <div>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '8px', color: '#374151' }}>
+                  {isEn ? 'Guaranteed Analysis (Nutrition)' : '등록 성분량'}
+                </label>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px' }}>
+                  <input type="text" placeholder="예: 24.0% (Min)" value={editForm.protein} onChange={e => setEditForm({ ...editForm, protein: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                  <input type="text" placeholder="예: 10.0% (Min)" value={editForm.fat} onChange={e => setEditForm({ ...editForm, fat: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                  <input type="text" placeholder="예: 5.0% (Max)" value={editForm.fiber} onChange={e => setEditForm({ ...editForm, fiber: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                  <input type="text" placeholder="예: 12.0% (Max)" value={editForm.moisture} onChange={e => setEditForm({ ...editForm, moisture: e.target.value })} style={{ width: '100%', padding: '12px', borderRadius: '6px', border: '1px solid #D1D5DB', fontSize: '0.95rem' }} />
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '12px', marginTop: '4px', fontSize: '0.75rem', color: '#6B7280' }}>
+                  <span>{isEn ? 'Crude Protein' : '조단백'}</span>
+                  <span>{isEn ? 'Crude Fat' : '조지방'}</span>
+                  <span>{isEn ? 'Crude Fiber' : '조섬유'}</span>
+                  <span>{isEn ? 'Moisture' : '수분'}</span>
+                </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '8px' }}>
               <button type="button" onClick={handleCloseEdit} style={{ padding: '12px 20px', fontWeight: '600', border: '1px solid #D1D5DB', borderRadius: '8px', cursor: 'pointer', backgroundColor: '#F9FAFB', color: '#374151' }}>
