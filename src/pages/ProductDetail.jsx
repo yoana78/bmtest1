@@ -40,6 +40,10 @@ export default function ProductDetail() {
   const origin = isEn ? product.originEn || 'Republic of Korea' : product.origin;
   const ingredients = isEn ? product.ingredientsEn || product.ingredients : product.ingredients;
 
+  // 값이 비어있는 항목은 표에 빈 줄로 남지 않도록 걸러낸다 (예전에 저장된 데이터 대비)
+  const nutritionEntries = Object.entries(product.nutrition || {}).filter(([, v]) => v && String(v).trim());
+  const showNutrition = nutritionEntries.length > 0 && (product.category === '사료' || product.category === '간식');
+
   const facts = [
     { k: isEn ? 'Code' : '상품코드', v: product.code },
     { k: isEn ? 'Spec' : '규격', v: product.spec || (isEn ? 'See specification' : '규격 정보 참조') },
@@ -136,11 +140,11 @@ export default function ProductDetail() {
           )}
         </Reveal>
 
-        {product.nutrition && (product.category === '사료' || product.category === '간식') && (
+        {showNutrition && (
           <Reveal className="pd-block">
             <h3>{isEn ? 'Guaranteed analysis' : '등록 성분량'}</h3>
             <dl className="pd-nutri">
-              {Object.entries(product.nutrition).map(([k, v]) => (
+              {nutritionEntries.map(([k, v]) => (
                 <div key={k}>
                   <dt>{nutritionLabelMap[k] ? (isEn ? nutritionLabelMap[k].en : nutritionLabelMap[k].ko) : k}</dt>
                   <dd>{v}</dd>

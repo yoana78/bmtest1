@@ -193,7 +193,7 @@ export default function Contact() {
                 </div>
                 <div className="meta-row">
                   <strong>E-MAIL:</strong>
-                  <span>help@petsb2b.co.kr</span>
+                  <span>{siteSettings.contactEmail}</span>
                 </div>
                 <div className="meta-row">
                   <strong>{isEn ? 'BIZ REG NO.:' : '사업자등록번호:'}</strong>

@@ -48,11 +48,13 @@ function compressImage(file, { maxDimension = 1600, startQuality = 0.85, maxBase
 }
 
 // 카테고리가 "사료"/"간식"일 때만 등록 성분량(조단백/조지방/조섬유/수분)을 저장한다.
+// 일부 항목만 채운 경우에도 빈 항목이 표에 줄로 남지 않도록, 값이 있는 항목만 남긴다.
 const CATEGORIES_WITH_NUTRITION = ['사료', '간식'];
 function buildNutrition(category, { protein, fat, fiber, moisture }) {
   if (!CATEGORIES_WITH_NUTRITION.includes(category)) return undefined;
-  if (!protein && !fat && !fiber && !moisture) return undefined;
-  return { protein, fat, fiber, moisture };
+  const filled = Object.entries({ protein, fat, fiber, moisture }).filter(([, v]) => v && v.trim());
+  if (filled.length === 0) return undefined;
+  return Object.fromEntries(filled);
 }
 
 export default function Admin() {
