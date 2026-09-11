@@ -42,7 +42,7 @@ export default function ProductDetail() {
 
   const facts = [
     { k: isEn ? 'Code' : '상품코드', v: product.code },
-    { k: isEn ? 'Spec' : '규격', v: product.spec },
+    { k: isEn ? 'Spec' : '규격', v: product.spec || (isEn ? 'See specification' : '규격 정보 참조') },
     { k: isEn ? 'Shelf life' : '유통기한', v: shelfLife },
     { k: isEn ? 'Origin' : '제조국', v: origin },
     { k: isEn ? 'Category' : '카테고리', v: isEn ? categoryEnMap[product.category] || product.category : product.category },
