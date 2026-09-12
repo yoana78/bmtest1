@@ -107,7 +107,8 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-shrink: 0;
+  /* 로고와 우측 버튼 영역이 같은 비율로 늘어나야 가운데 메뉴가 화면 정중앙에 온다 */
+  flex: 1 0 auto;
 }
 .topbar-logo img {
   width: 40px; height: 40px;
@@ -127,8 +128,9 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 .topbar-nav {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  flex: 1;
+  flex: 0 1 auto;
 }
 
 .topbar-item {
@@ -154,7 +156,7 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 .topbar-item.active { color: #FFFFFF; background: var(--accent); box-shadow: 0 6px 16px rgba(0,102,179,0.28); }
 .topbar-item.active::after { transform: translateX(-50%) scale(1); }
 
-.topbar-right { display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+.topbar-right { display: flex; align-items: center; justify-content: flex-end; gap: 14px; flex: 1 0 auto; }
 
 /* 햄버거 (모바일/태블릿) */
 .topbar-burger {
