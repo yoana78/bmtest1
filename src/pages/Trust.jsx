@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
-import { partners } from '../data/partners';
-import { petDistributors } from '../data/petDistributors';
-import { expoPhotos } from '../data/expo';
+import { usePageContent } from '../content/usePageContent';
+import { useData } from '../context/DataContext';
+import { buildExpoData } from '../content/expoData';
+import { useSiteList } from '../content/siteLists';
+
 
 export default function Trust() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
+  const { txt, img } = usePageContent('trust'); // 관리자 페이지에서 고칠 수 있는 문구/사진
+  const { siteSettings } = useData();
+  const partners = useSiteList('partners');
+  const petDistributors = useSiteList('petDistributors');
+  // 기존 연도 + 관리자 페이지에서 추가한 연도를 합친 박람회 사진 목록
+  const { photos: expoPhotos, meta: expoYearMeta } = buildExpoData(siteSettings.expoYears);
 
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(null);
   const [selectedCert, setSelectedCert] = useState(null);
@@ -148,32 +156,6 @@ export default function Trust() {
     },
   ];
 
-  const expoYearMeta = {
-    '2019': {
-      labelKo: '2019 미국 올랜도 글로벌 펫 엑스포',
-      labelEn: '2019 Global Pet Expo, Orlando',
-      descKo: '미국 올랜도 글로벌 펫 엑스포 참가 현장',
-      descEn: "Boomyung's booth at Global Pet Expo, Orlando, USA."
-    },
-    '2023': {
-      labelKo: '2023 태국 국제 펫 박람회 현장 갤러리',
-      labelEn: '2023 Pet Fair South East Asia',
-      descKo: '방콕 현지 부명 브랜드 전시 및 상담 현장',
-      descEn: "Showcasing Boomyung's premium brands to global buyers in Bangkok."
-    },
-    '2024': {
-      labelKo: '2024 태국 국제 펫 박람회 현장 갤러리',
-      labelEn: '2024 Pet Fair South East Asia',
-      descKo: '방콕 현지 부명 브랜드 전시 및 상담 현장',
-      descEn: "Showcasing Boomyung's premium brands to global buyers in Bangkok."
-    },
-    '2025': {
-      labelKo: '2025 태국 국제 펫 박람회 현장 갤러리',
-      labelEn: '2025 Pet Fair South East Asia',
-      descKo: '방콕 현지 부명 브랜드 전시 및 상담 현장',
-      descEn: "Showcasing Boomyung's premium brands to global buyers in Bangkok."
-    }
-  };
 
   const expoYearGroups = [];
   expoPhotos.forEach((photo, index) => {
@@ -211,20 +193,20 @@ export default function Trust() {
   return (
     <div className="daesang-sub-page">
       {/* Sub Page Hero */}
-      <section className="daesang-sub-hero" style={{ backgroundImage: "url('./assets/trust_hero.png')" }}>
+      <section className="daesang-sub-hero" style={{ backgroundImage: `url('${img('heroImage')}')` }}>
         <div className="daesang-section-overlay"></div>
         <div className="daesang-sub-hero-content">
-          <span className="daesang-poetic-sub">QUALITY & GLOBAL TRUST</span>
-          <h1>{isEn ? 'Trust & Certification' : '신뢰와 인증'}</h1>
-          <p>{isEn ? 'Uncompromising safety protocols & international exhibition records.' : '엄격한 품질 표준과 글로벌 박람회 출품을 통해 신뢰를 실증합니다.'}</p>
+          <span className="daesang-poetic-sub">{txt('heroEyebrow')}</span>
+          <h1 className="cms-text">{txt('heroTitle')}</h1>
+          <p className="cms-text">{txt('heroBody')}</p>
         </div>
       </section>
 
       {/* Certifications Grid Section */}
       <section className="daesang-white-section">
         <div className="daesang-container-wide">
-          <span className="daesang-brand-num">CERTIFICATIONS</span>
-          <h2 className="daesang-section-h2">{isEn ? 'Quality Management System' : '품질 및 안전 인증 시스템'}</h2>
+          <span className="daesang-brand-num">{txt('certEyebrow')}</span>
+          <h2 className="daesang-section-h2">{txt('certTitle')}</h2>
 
           <div className="daesang-trust-grid">
             {certifications.map(cert => {
@@ -250,12 +232,10 @@ export default function Trust() {
       {/* Patents / IP Section */}
       <section className="daesang-white-section" style={{ background: '#F8F9FA', borderTop: '1px solid #EAEAEA' }}>
         <div className="daesang-container-wide">
-          <span className="daesang-brand-num">INTELLECTUAL PROPERTY</span>
-          <h2 className="daesang-section-h2">{isEn ? 'Patents Held' : '보유 특허'}</h2>
+          <span className="daesang-brand-num">{txt('patentEyebrow')}</span>
+          <h2 className="daesang-section-h2">{txt('patentTitle')}</h2>
           <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '-8px', marginBottom: '20px' }}>
-            {isEn
-              ? 'BOOMYUNG holds patents, design registrations, and a utility model covering our pet food and accessory technologies, registered with the Korean Intellectual Property Office (KIPO).'
-              : '(주)부명은 반려동물 사료 및 용품 관련 기술에 대해 특허청(KIPO)에 등록된 특허, 디자인등록, 실용신안을 보유하고 있습니다.'}
+            {txt('patentBody')}
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px' }}>
@@ -377,8 +357,8 @@ export default function Trust() {
       {/* Distribution Network Wall (13 Partners) */}
       <section className="daesang-white-section" style={{ background: expoYearGroups.length % 2 === 1 ? '#F8F9FA' : undefined, borderTop: '1px solid #EAEAEA' }}>
         <div className="daesang-container-wide">
-          <span className="daesang-brand-num">PARTNERSHIP</span>
-          <h2 className="daesang-section-h2">{isEn ? 'Domestic Distribution Network' : '신뢰로 인정받은 국내 대형 유통 네트워크'}</h2>
+          <span className="daesang-brand-num">{txt('networkEyebrow')}</span>
+          <h2 className="daesang-section-h2">{txt('networkTitle')}</h2>
           
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '20px', marginTop: '30px' }}>
             {partners.map(p => (
@@ -399,7 +379,7 @@ export default function Trust() {
               >
                 <img src={p.logo} alt={p.nameKo} style={{ maxHeight: '70px', maxWidth: '100%', objectFit: 'contain' }} />
                 <span style={{ fontSize: '0.82rem', color: '#666', marginTop: '4px', fontWeight: 500 }}>
-                  {isEn ? p.nameEn : p.nameKo}
+                  {txt('petDistTitle')}
                 </span>
               </div>
             ))}
@@ -410,7 +390,7 @@ export default function Trust() {
       {/* Pet Specialty Retail Partners */}
       <section className="daesang-white-section" style={{ background: expoYearGroups.length % 2 === 0 ? '#F8F9FA' : undefined, borderTop: '1px solid #EAEAEA' }}>
         <div className="daesang-container-wide">
-          <span className="daesang-brand-num">PARTNERSHIP</span>
+          <span className="daesang-brand-num">{txt('networkEyebrow')}</span>
           <h2 className="daesang-section-h2">{isEn ? 'Boomyung\'s Pet Specialty Retail Partners' : '부명과 함께하는 국내 펫 전문 유통사'}</h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '20px', marginTop: '30px' }}>

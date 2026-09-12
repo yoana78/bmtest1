@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { usePageContent } from '../content/usePageContent';
+import { useSiteList } from '../content/siteLists';
+
+// 관리자가 빈 줄을 넣어 나눈 문단을 각각 분리한다 (문단 사이 여백 유지)
+function splitParagraphs(text) {
+  return String(text || '').split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+}
+
 
 const wellzenImages = [
   './assets/wellzen/wellzen_01.png',
@@ -21,72 +29,11 @@ const qingdaoImages = [
 export default function About() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
+  const { txt, img } = usePageContent('about'); // 관리자 페이지에서 고칠 수 있는 문구/사진
+  const historyItems = useSiteList('history');
   const [galleryImages, setGalleryImages] = useState(null);
   const [showLogisticsVideo, setShowLogisticsVideo] = useState(false);
 
-  const historyItems = [
-    {
-      year: '2024 ~ Present',
-      titleKo: '글로벌 네트워크 및 브랜드 확정',
-      titleEn: 'Global Network & Brand Expansion',
-      itemsKo: ['사료 간식 공장', 'R&D 연구소 체계 구축', '글로벌 OEM/ODM 공급 체인 확장'],
-      itemsEn: ['Pet food & snack factory', 'Established R&D Center system', 'Expanded global OEM/ODM supply chain']
-    },
-    {
-      year: '2023',
-      titleKo: '품질 인증 및 제조 혁신',
-      titleEn: 'Quality Certification & Manufacturing Innovation',
-      itemsKo: ['ISO 22000 및 HACCP 인증 획득, 전용 생산 시설 및 자동화 설비 도입'],
-      itemsEn: ['Obtained ISO 22000 & HACCP certifications, introduced specialized manufacturing & automation facilities']
-    },
-    {
-      year: '2021',
-      itemsKo: ['요기요 입점', 'CJ홈쇼핑 사료 입점', '하우펫 브랜드 런칭'],
-      itemsEn: ['Listed on Yogiyo', 'Listed feed on CJ Home Shopping', 'Launched HOWPET brand']
-    },
-    {
-      year: '2020',
-      itemsKo: ['이마트24 전점 입점', '마켓컬리 입점'],
-      itemsEn: ['Listed in all E-mart24 stores', 'Listed on Market Kurly']
-    },
-    {
-      year: '2019',
-      itemsKo: ['킴스클럽 25개점 입점', '메가마트 12개점 입점'],
-      itemsEn: ['Listed in 25 Kim\'s Club stores', 'Listed in 12 Megamart stores']
-    },
-    {
-      year: '2018',
-      itemsKo: ['유망 중소기업 대상 수상', '공영홈쇼핑 사료 입점'],
-      itemsEn: ['Won Promising SME Award', 'Listed feed on Public Home Shopping']
-    },
-    {
-      year: '2017',
-      itemsKo: ['농협 하나로마트 계약', '농협 목우촌 제조위탁 계약', '국내 로얄바이츠 사료공장 설립'],
-      itemsEn: ['Contracted with NongHyup Hanaro Mart', 'Contracted manufacturing with NongHyup Mokwoochon', 'Established Royal Bites domestic feed factory']
-    },
-    {
-      year: '2008',
-      itemsKo: ['미국 월마트 수출'],
-      itemsEn: ['Exported to Walmart USA']
-    },
-    {
-      year: '2006',
-      itemsKo: ['GS마트 전점 입점', '롯데슈퍼 전점 입점'],
-      itemsEn: ['Listed in all GS Mart stores', 'Listed in all Lotte Super stores']
-    },
-    {
-      year: '2002',
-      itemsKo: ['이마트 전점 입점'],
-      itemsEn: ['Listed in all E-mart stores']
-    },
-    {
-      year: '1995',
-      titleKo: '(주)부명 설립',
-      titleEn: 'Establishment of BOOMYOUNG CO., LTD.',
-      itemsKo: [],
-      itemsEn: []
-    }
-  ];
 
   return (
     <div className="daesang-sub-page">
@@ -94,17 +41,15 @@ export default function About() {
       <section
         className="daesang-sub-hero"
         style={{
-          background: "linear-gradient(rgba(10,37,64,0.55), rgba(10,37,64,0.55)), url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2560&q=80') center/cover no-repeat #0A2540"
+          background: `linear-gradient(rgba(10,37,64,0.55), rgba(10,37,64,0.55)), url('${img('heroImage')}') center/cover no-repeat #0A2540`
         }}
       >
         <div className="daesang-section-overlay"></div>
         <div className="daesang-sub-hero-content">
-          <span className="daesang-poetic-sub">CORPORATE OVERVIEW &amp; CI</span>
-          <h1>{isEn ? 'About Us' : '회사소개'}</h1>
+          <span className="daesang-poetic-sub">{txt('heroEyebrow')}</span>
+          <h1 className="cms-text">{txt('heroTitle')}</h1>
           <p>
-            {isEn
-              ? 'Opening a happy tomorrow for pets and pet owners based on honest technology and trust accumulated over 30 years.'
-              : '30년이상 축적된 정직한 기술과 신뢰를 바탕으로 반려동물과 반려인의 행복한 내일을 열어갑니다.'}
+            {txt('heroBody')}
           </p>
         </div>
       </section>
@@ -114,50 +59,41 @@ export default function About() {
         <div className="daesang-container-wide">
           <div className="daesang-sub-split">
             <div className="daesang-sub-left">
-              <span className="daesang-brand-num">CEO MESSAGE</span>
-              <h2>{isEn ? 'Dreaming of a happy world together with pets' : '반려동물과 함께 행복한 세상을 꿈꿉니다'}</h2>
+              <span className="daesang-brand-num">{txt('ceoEyebrow')}</span>
+              <h2>{txt('ceoHeading')}</h2>
               <div style={{ marginTop: '20px', padding: '16px', background: 'var(--dh-surface)', backdropFilter: 'blur(20px)', border: '1px solid var(--dh-border)', borderRadius: '12px', borderLeft: '4px solid var(--accent)' }}>
                 <p style={{ fontWeight: '700', fontSize: '0.92rem', color: 'var(--dh-navy)' }}>
-                  {isEn ? 'Seong-hoon Jeong, CEO' : '정성훈 대표이사'}
+                  {txt('ceoName')}
                 </p>
                 <p style={{ fontSize: '0.78rem', color: 'var(--dh-text-muted)', marginTop: '2px' }}>
-                  {isEn ? '(주)BOOMYOUNG CO., LTD.' : '(주)부명 대표이사'}
+                  {txt('ceoCompany')}
                 </p>
               </div>
             </div>
             <div className="daesang-sub-right">
               <p className="daesang-lead-text">
-                {isEn
-                  ? 'Hello, I am Seong-hoon Jeong, CEO of BOOMYOUNG CO., LTD.'
-                  : '안녕하십니까. 부명(BOOMYOUNG CO., LTD.) 대표이사 정성훈입니다.'}
+                {txt('ceoLead')}
               </p>
-              <p style={{ marginBottom: '14px' }}>
-                {isEn
-                  ? 'Under the goal of providing better products and services to both pets and pet owners, BOOMYOUNG operates across product planning, development, distribution, and logistics, centered around pet supplies.'
-                  : '부명은 반려동물과 반려인 모두에게 더 나은 제품과 서비스를 제공한다는 목표 아래 반려동물용품을 중심으로 상품 기획, 개발, 유통 및 물류 전반의 사업을 운영하고 있습니다.'}
-              </p>
-              <p style={{ marginBottom: '14px' }}>
-                {isEn
-                  ? 'We closely analyze fast-changing pet market trends and consumer demands to introduce practical and high-quality products, maintaining sustainable growth built on stable partnerships with major domestic distribution channels.'
-                  : '빠르게 변화하는 반려동물 시장의 트렌드와 소비자의 요구를 면밀히 분석하여 실용성과 품질을 갖춘 제품을 선보이고, 국내 주요 유통채널과의 안정적인 협력관계를 바탕으로 지속적인 성장을 이어가고 있습니다.'}
-              </p>
-              <p style={{ marginBottom: '14px', position: 'relative' }}>
-                {isEn
-                  ? 'Going forward, we will pursue management that satisfies both stores and customers based on trust, strengthening market leadership through solid planning and high-quality manufacturing capabilities. Thank you.'
-                  : '앞으로도 신뢰를 바탕으로 하는 매장과 고객 모두가 만족할 수 있는 경영을 지향하며, 알찬 기획과 고품질 제조 역량으로 시장 지배력을 강화하고 가치 있는 미래를 만들어 가겠습니다. 감사합니다.'}
-                <img
-                  src="./assets/ceo_signature.png"
-                  alt={isEn ? 'CEO Signature' : '대표이사 서명'}
-                  style={{
-                    position: 'absolute',
-                    height: '60px',
-                    objectFit: 'contain',
-                    right: isEn ? '-10px' : '-18px',
-                    bottom: '-22px',
-                    pointerEvents: 'none'
-                  }}
-                />
-              </p>
+              {/* 빈 줄로 나뉜 문단을 각각 <p>로 렌더링해 문단 간격을 유지하고, 서명은 마지막 문단에 붙인다 */}
+              {splitParagraphs(txt('ceoBody')).map((para, idx, all) => (
+                <p key={idx} className="cms-text" style={{ marginBottom: '14px', position: idx === all.length - 1 ? 'relative' : undefined }}>
+                  {para}
+                  {idx === all.length - 1 && (
+                    <img
+                      src={img('ceoSignature')}
+                      alt={isEn ? 'CEO Signature' : '대표이사 서명'}
+                      style={{
+                        position: 'absolute',
+                        height: '60px',
+                        objectFit: 'contain',
+                        right: isEn ? '-10px' : '-18px',
+                        bottom: '-22px',
+                        pointerEvents: 'none'
+                      }}
+                    />
+                  )}
+                </p>
+              ))}
             </div>
           </div>
         </div>
@@ -167,7 +103,7 @@ export default function About() {
       <section className="daesang-gray-section">
         <div className="daesang-container-wide">
           <h2 className="daesang-section-h2">
-            {isEn ? 'Company History' : '기업 연혁'}
+            {txt('historyTitle')}
           </h2>
           <div className="daesang-timeline">
             {historyItems.map((item, index) => {
@@ -198,7 +134,7 @@ export default function About() {
       <section className="daesang-white-section">
         <div className="daesang-container-wide">
           <h2 className="daesang-section-h2">
-            {isEn ? 'Infrastructure' : '생산 및 R&D 인프라'}
+            {txt('infraTitle')}
           </h2>
           <div className="daesang-trust-grid">
             <div className="daesang-trust-card" onClick={() => setGalleryImages(homadImages)} style={{ cursor: 'pointer' }}>
@@ -264,7 +200,7 @@ export default function About() {
       <section className="daesang-white-section">
         <div className="daesang-container-wide">
           <h2 className="daesang-section-h2">
-            {isEn ? 'Corporate Identity' : 'CI 소개'}
+            {txt('ciTitle')}
           </h2>
           
           <div className="ci-layout" style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '32px', alignItems: 'stretch' }}>

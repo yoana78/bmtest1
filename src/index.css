@@ -1630,3 +1630,9 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 img[alt="아무도없개"] {
   transform: scale(1.2);
 }
+
+/* 관리자 페이지에서 입력한 문구는 엔터(줄바꿈)를 누른 그대로 화면에 반영되어야 한다.
+   pre-line은 줄바꿈만 살리고 불필요한 연속 공백은 정리해준다. */
+.cms-text {
+  white-space: pre-line;
+}

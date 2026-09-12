@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
+import { usePageContent } from '../content/usePageContent';
 import { useData } from '../context/DataContext';
 
 export default function Brands() {
@@ -8,16 +9,17 @@ export default function Brands() {
   const { brands: allBrands } = useData();
   const brands = allBrands.filter(b => b.type !== 'imported'); // 자사 브랜드만 필터링
   const isEn = lang === 'en';
+  const { txt, img } = usePageContent('brands'); // 관리자 페이지에서 고칠 수 있는 문구/사진
 
   return (
     <div className="daesang-sub-page">
       {/* Sub Page Hero */}
-      <section className="daesang-sub-hero" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=2560&q=80')" }}>
+      <section className="daesang-sub-hero" style={{ backgroundImage: `url('${img('heroImage')}')` }}>
         <div className="daesang-section-overlay"></div>
         <div className="daesang-sub-hero-content">
-          <span className="daesang-poetic-sub">OUR PORTFOLIO</span>
-          <h1>{isEn ? 'Brand Ecosystem' : '브랜드 포트폴리오'}</h1>
-          <p>{isEn ? 'Discover our specialized brands tailored for healthy pet life.' : '(주)부명의 전문 펫 브랜드 라인업을 소개합니다.'}</p>
+          <span className="daesang-poetic-sub">{txt('heroEyebrow')}</span>
+          <h1>{txt('heroTitle')}</h1>
+          <p>{txt('heroBody')}</p>
         </div>
       </section>
 

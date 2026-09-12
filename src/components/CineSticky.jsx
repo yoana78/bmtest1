@@ -58,7 +58,7 @@ export default function CineSticky({ blocks }) {
             </div>
             <span className="cine-block-tag">{b.tag}</span>
             <h3>{b.title}</h3>
-            <p>{b.body}</p>
+            <p className="cms-text">{b.body}</p>
             {b.meta && (
               <div className="cine-meta">
                 {b.meta.map((m) => (

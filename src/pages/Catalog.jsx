@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
+import { usePageContent } from '../content/usePageContent';
 import { useData } from '../context/DataContext';
 
 const CATEGORY_EN = {
@@ -16,6 +17,7 @@ export default function Catalog() {
   const { lang } = useLanguage();
   const { brands, products } = useData();
   const isEn = lang === 'en';
+  const { txt, img } = usePageContent('catalog'); // 관리자 페이지에서 고칠 수 있는 문구/사진
   const [searchParams] = useSearchParams();
 
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '전체');
@@ -66,17 +68,14 @@ export default function Catalog() {
       <section
         className="daesang-sub-hero"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=2400&q=80')"
+          backgroundImage: `url('${img('heroImage')}')`
         }}
       >
         <div className="daesang-sub-hero-content">
-          <span className="daesang-poetic-sub">{isEn ? 'Catalog' : '제품 카탈로그'}</span>
-          <h1>{isEn ? 'Everything we make.' : '부명이 만드는 모든 것'}</h1>
-          <p>
-            {isEn
-              ? 'Nutrition, treats, litter and daily supplies across four specialised pet brands.'
-              : '4개 전문 펫 브랜드의 사료, 간식, 모래, 용품 전 품목을 한 곳에서 확인하실 수 있습니다.'}
+          <span className="daesang-poetic-sub">{txt('heroEyebrow')}</span>
+          <h1 className="cms-text">{txt('heroTitle')}</h1>
+          <p className="cms-text">
+            {txt('heroBody')}
           </p>
         </div>
       </section>

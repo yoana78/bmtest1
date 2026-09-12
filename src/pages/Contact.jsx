@@ -1,10 +1,14 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
+import { usePageContent } from '../content/usePageContent';
 import { useData } from '../context/DataContext';
+import { useSiteList } from '../content/siteLists';
 
 export default function Contact() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
+  const { txt, img } = usePageContent('contact'); // 관리자 페이지에서 고칠 수 있는 문구/사진
+  const businessCards = useSiteList('businessCards');
   const { siteSettings, brands } = useData();
 
   const [formData, setFormData] = useState({
@@ -57,36 +61,16 @@ export default function Contact() {
       : '메일 작성 화면이 열립니다. 내용을 확인하신 뒤 메일 앱에서 "보내기"를 눌러주셔야 문의가 실제로 접수됩니다.');
   };
 
-  const businessCards = [
-    {
-      id: 'team1',
-      titleKo: '영업1팀 담당자 명함',
-      titleEn: 'Sales Team 1 Representative',
-      imgKr: './assets/business_cards/team2_kr.png',
-      imgEn: './assets/business_cards/team2_en.png',
-      descKo: '국내 대형마트, 편의점 및 이커머스 입점 전문 담당자',
-      descEn: 'Domestic Retail & E-Commerce Account Executive'
-    },
-    {
-      id: 'team2',
-      titleKo: '영업2팀 담당자 명함',
-      titleEn: 'Sales Team 2 Representative',
-      imgKr: './assets/business_cards/team1_kr.png',
-      imgEn: './assets/business_cards/team1_en.png',
-      descKo: '해외 수출, OEM/ODM 및 글로벌 유통 전문 담당자',
-      descEn: 'Global Export & OEM/ODM Account Executive'
-    }
-  ];
 
   return (
     <div className="daesang-sub-page">
       {/* Sub Page Hero */}
-      <section className="daesang-sub-hero" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=2560&q=80')" }}>
+      <section className="daesang-sub-hero" style={{ backgroundImage: `url('${img('heroImage')}')` }}>
         <div className="daesang-section-overlay"></div>
         <div className="daesang-sub-hero-content">
-          <span className="daesang-poetic-sub">INQUIRY & SALES CONTACT</span>
-          <h1>{isEn ? 'Contact Us & Sales Routing' : 'B2B 입점 및 영업 담당자 문의'}</h1>
-          <p>{isEn ? 'Connect with BOOMYUNG for domestic retail distribution and global export partnerships.' : '(주)부명과 함께 성장할 국내외 파트너사의 문의 및 영업 담당자를 안내합니다.'}</p>
+          <span className="daesang-poetic-sub">{txt('heroEyebrow')}</span>
+          <h1 className="cms-text">{txt('heroTitle')}</h1>
+          <p className="cms-text">{txt('heroBody')}</p>
         </div>
       </section>
 
@@ -94,14 +78,12 @@ export default function Contact() {
       <section className="daesang-white-section" style={{ borderBottom: '1px solid var(--dh-border)' }}>
         <div className="daesang-container-wide">
           <div style={{ marginBottom: '24px' }}>
-            <span className="daesang-brand-num">SALES REPRESENTATIVES</span>
+            <span className="daesang-brand-num">{txt('cardsEyebrow')}</span>
             <h2 className="daesang-section-h2" style={{ marginBottom: '8px' }}>
-              {isEn ? 'Direct Sales Representatives Business Cards' : '부명 영업1팀 · 영업2팀 담당자 명함 안내'}
+              {txt('cardsTitle')}
             </h2>
             <p style={{ color: 'var(--dh-text-muted)', fontSize: '0.82rem' }}>
-              {isEn
-                ? 'Click on the card to inspect high-resolution business card details or reach out directly.'
-                : '문의 유형에 맞춰 담당 영업팀 명함을 확인하시거나 직접 연락을 주시면 더욱 빠르고 원활한 상담이 가능합니다.'}
+              {txt('cardsBody')}
             </p>
           </div>
 
@@ -127,10 +109,7 @@ export default function Contact() {
                     <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--dh-blue)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
                       {isEn ? card.titleEn : card.titleKo}
                     </span>
-                    <span style={{ fontSize: '0.7rem', background: '#EBF5FF', color: 'var(--dh-blue)', padding: '2px 8px', borderRadius: '10px', fontWeight: 600 }}>
-                      {isEn ? 'VERIFIED B2B' : '담당자 지정'}
-                    </span>
-                  </div>
+                                      </div>
 
                   <div 
                     onClick={() => setActiveCardModal(currentImg)}
@@ -170,26 +149,24 @@ export default function Contact() {
         <div className="daesang-container-wide">
           <div className="daesang-contact-grid">
             <div className="contact-info-col">
-              <span className="daesang-brand-num">HEADQUARTERS</span>
-              <h2>{isEn ? 'Corporate Information' : '(주)부명 본사 안내'}</h2>
+              <span className="daesang-brand-num">{txt('hqEyebrow')}</span>
+              <h2 className="cms-text">{txt('hqTitle')}</h2>
               <p className="contact-desc">
-                {isEn 
-                  ? 'Feel free to contact us regarding OEM/ODM manufacturing, retail distribution, or global export inquiries.' 
-                  : '제품 유통, 대형마트 입점, 해외 수출 및 OEM/ODM 제조 관련 문의를 남겨주시면 담당 파트너십 팀이 안내해 드립니다.'}
+                {txt('hqBody')}
               </p>
 
               <div className="contact-meta">
                 <div className="meta-row">
                   <strong>ADDRESS:</strong>
-                  <span>{isEn ? '306, 19, Geonwon-daero 34beon-gil, Guri-si, Gyeonggi-do, Korea' : '경기도 구리시 건원대로34번길 19 306 (주)부명'}</span>
+                  <span className="cms-text">{txt('hqAddress')}</span>
                 </div>
                 <div className="meta-row">
                   <strong>TEL:</strong>
-                  <span>031-553-8003</span>
+                  <span>{txt('hqTel')}</span>
                 </div>
                 <div className="meta-row">
                   <strong>FAX:</strong>
-                  <span>031-592-2460</span>
+                  <span>{txt('hqFax')}</span>
                 </div>
                 <div className="meta-row">
                   <strong>E-MAIL:</strong>
@@ -197,7 +174,7 @@ export default function Contact() {
                 </div>
                 <div className="meta-row">
                   <strong>{isEn ? 'BIZ REG NO.:' : '사업자등록번호:'}</strong>
-                  <span>132-81-49973</span>
+                  <span>{txt('hqBizNo')}</span>
                 </div>
               </div>
             </div>
