@@ -238,7 +238,7 @@ export default function Trust() {
             {txt('patentBody')}
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px' }}>
+          <div className="patent-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px' }}>
             {patents.map(p => (
               <div
                 key={p.no}
