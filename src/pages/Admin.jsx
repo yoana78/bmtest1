@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { useLanguage } from '../i18n/LanguageContext';
 import PageContentEditor from './PageContentEditor';
@@ -152,7 +152,7 @@ export default function Admin() {
   const { lang } = useLanguage();
   const isEn = lang === 'en';
   const {
-    brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData,
+    brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData, undoReset,
     siteSettings, updateSiteSettings, syncNow, uploadImage
   } = useData();
 
@@ -199,6 +199,19 @@ export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [passwordInput, setPasswordInput] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  // 이전에 로그인한 세션 쿠키가 아직 유효하면(24시간 이내) 비밀번호를 다시 묻지 않는다.
+  useEffect(() => {
+    fetch('/api/session')
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          setIsAuthenticated(true);
+          sessionStorage.setItem('admin_logged_in', '1');
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const [activeTab, setActiveTab] = useState('brand');
   const [successMsg, setSuccessMsg] = useState('');
@@ -254,10 +267,9 @@ export default function Admin() {
   const translateText = async (text) => {
     if (!text || !text.trim()) return '';
     try {
-      const token = sessionStorage.getItem('admin_pw') || '';
       const res = await fetch('/api/translate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text })
       });
       if (!res.ok) return '';
@@ -303,16 +315,26 @@ export default function Admin() {
     }
   };
 
-  // Password Verification
-  const handlePasswordSubmit = (e) => {
+  // Password Verification — 서버(/api/login)가 실제 값을 검증하고, 맞으면 HttpOnly 세션 쿠키를 내려준다.
+  // 비밀번호는 프론트엔드 코드 어디에도 남지 않는다.
+  const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    if (passwordInput === '3051') {
-      setIsAuthenticated(true);
-      setPasswordError('');
-      sessionStorage.setItem('admin_pw', passwordInput); // DataContext가 저장 요청 시 이 값을 서버 인증 헤더로 사용
-      syncNow(); // 로그인 전 이 브라우저에 남아있던 localStorage 편집분을 서버로 동기화
-    } else {
-      setPasswordError(isEn ? 'Incorrect password.' : '비밀번호가 일치하지 않습니다.');
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: passwordInput })
+      });
+      if (res.ok) {
+        setIsAuthenticated(true);
+        setPasswordError('');
+        sessionStorage.setItem('admin_logged_in', '1'); // 비밀번호가 아닌, 로그인 여부만 나타내는 힌트
+        syncNow(); // 로그인 전 이 브라우저에 남아있던 localStorage 편집분을 서버로 동기화
+      } else {
+        setPasswordError(isEn ? 'Incorrect password.' : '비밀번호가 일치하지 않습니다.');
+      }
+    } catch {
+      setPasswordError(isEn ? 'Login failed. Please try again.' : '로그인에 실패했습니다. 다시 시도해 주세요.');
     }
   };
 
@@ -680,6 +702,20 @@ export default function Admin() {
       <section className="daesang-white-section" style={{ padding: '60px 0 100px' }}>
         <div className="daesang-container" style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
 
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '12px' }}>
+            <button
+              onClick={() => {
+                fetch('/api/logout', { method: 'POST' }).finally(() => {
+                  setIsAuthenticated(false);
+                  sessionStorage.removeItem('admin_logged_in');
+                });
+              }}
+              style={{ background: 'none', border: 'none', color: '#6B7280', fontSize: '0.85rem', fontWeight: '600', cursor: 'pointer', textDecoration: 'underline' }}
+            >
+              {isEn ? 'Log out' : '로그아웃'}
+            </button>
+          </div>
+
           {successMsg && (
             <div style={{ padding: '16px 24px', backgroundColor: '#E0F2FE', color: '#0369A1', borderRadius: '8px', border: '1px solid #BAE6FD', marginBottom: '30px', fontWeight: '600', fontSize: '1rem' }}>
               ✓ {successMsg}
@@ -721,6 +757,18 @@ export default function Admin() {
               style={{ marginLeft: 'auto', padding: '12px 18px', fontSize: '0.9rem', fontWeight: '600', border: '1px solid #FCA5A5', borderRadius: '6px', cursor: 'pointer', backgroundColor: '#FEF2F2', color: '#DC2626' }}
             >
               🔄 {isEn ? 'Reset Data' : '데이터 초기화'}
+            </button>
+            <button
+              onClick={() => {
+                if (window.confirm(isEn ? 'Undo the last reset and restore the previous data?' : '가장 최근 초기화를 취소하고 이전 데이터로 되돌리시겠습니까?')) {
+                  undoReset()
+                    .then(() => alert(isEn ? 'Restored previous data.' : '이전 데이터로 복원되었습니다.'))
+                    .catch((err) => alert(err.message || (isEn ? 'Undo failed.' : '되돌리기에 실패했습니다.')));
+                }
+              }}
+              style={{ padding: '12px 18px', fontSize: '0.9rem', fontWeight: '600', border: '1px solid #BFDBFE', borderRadius: '6px', cursor: 'pointer', backgroundColor: '#EFF6FF', color: '#1D4ED8' }}
+            >
+              ↩️ {isEn ? 'Undo Reset' : '초기화 되돌리기'}
             </button>
           </div>
 

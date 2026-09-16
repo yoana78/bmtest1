@@ -24,14 +24,22 @@ const defaultSiteSettings = {
 // 관리자 페이지에서 저장한 데이터를 모두가 볼 수 있도록 서버(D1)에도 동기화한다.
 // D1로 옮기면서 /api/data 통짜 저장 방식 대신 브랜드/제품 각각을 개별 엔드포인트로
 // 저장한다 (homepage와 동일한 구조) — /api/data는 이제 공개 조회 전용 GET만 지원.
+// 로그인 여부는 서버가 내려준 HttpOnly 세션 쿠키로 판단하므로(같은 출처 요청에 브라우저가
+// 자동으로 실어 보냄), 비밀번호 자체는 브라우저 어디에도 저장하지 않는다.
 function authHeaders() {
-  const password = sessionStorage.getItem('admin_pw');
-  return { 'Content-Type': 'application/json', ...(password ? { Authorization: `Bearer ${password}` } : {}) };
+  return { 'Content-Type': 'application/json' };
+}
+
+// 실제 인증은 서버의 HttpOnly 세션 쿠키가 담당한다. 이 플래그는 비밀번호 없이
+// "이 브라우저가 로그인된 상태로 보이는지"만 판단하는 UI용 힌트일 뿐이다 —
+// Admin.jsx가 /api/login 성공 시 세팅한다.
+function isAdminLoggedIn() {
+  return sessionStorage.getItem('admin_logged_in') === '1';
 }
 
 async function persistBrand(method, id, body) {
   try {
-    if (!sessionStorage.getItem('admin_pw')) return; // 관리자로 로그인한 상태가 아니면 서버에 쓰지 않음
+    if (!isAdminLoggedIn()) return; // 관리자로 로그인한 상태가 아니면 서버에 쓰지 않음
     const url = method === 'POST' ? '/api/brands' : `/api/brands/${encodeURIComponent(id)}`;
     const res = await fetch(url, { method, headers: authHeaders(), body: body !== undefined ? JSON.stringify(body) : undefined });
     if (!res.ok) throw new Error(`save failed: ${res.status}`);
@@ -43,7 +51,7 @@ async function persistBrand(method, id, body) {
 
 async function persistProduct(method, id, body) {
   try {
-    if (!sessionStorage.getItem('admin_pw')) return;
+    if (!isAdminLoggedIn()) return;
     const url = method === 'POST' ? '/api/products' : `/api/products/${encodeURIComponent(id)}`;
     const res = await fetch(url, { method, headers: authHeaders(), body: body !== undefined ? JSON.stringify(body) : undefined });
     if (!res.ok) throw new Error(`save failed: ${res.status}`);
@@ -55,7 +63,7 @@ async function persistProduct(method, id, body) {
 
 async function persistSettings(updates) {
   try {
-    if (!sessionStorage.getItem('admin_pw')) return;
+    if (!isAdminLoggedIn()) return;
     const res = await fetch('/api/settings', { method: 'PUT', headers: authHeaders(), body: JSON.stringify(updates) });
     if (!res.ok) throw new Error(`save failed: ${res.status}`);
   } catch (err) {
@@ -155,7 +163,7 @@ export function DataProvider({ children }) {
 
   const resetData = async () => {
     try {
-      if (!sessionStorage.getItem('admin_pw')) return;
+      if (!isAdminLoggedIn()) return;
       const res = await fetch('/api/reset', { method: 'POST', headers: authHeaders() });
       if (!res.ok) throw new Error('reset failed');
       const data = await fetch('/api/data').then((r) => r.json());
@@ -171,6 +179,20 @@ export function DataProvider({ children }) {
     }
   };
 
+  // 관리자 페이지의 "초기화 되돌리기" 버튼에서 사용 — 가장 최근 초기화 직전 상태로 복원
+  const undoReset = async () => {
+    if (!isAdminLoggedIn()) return;
+    const res = await fetch('/api/reset/undo', { method: 'POST', headers: authHeaders() });
+    if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || '되돌리기 실패');
+    const data = await fetch('/api/data').then((r) => r.json());
+    setBrands(data.brands || initialBrands);
+    setProducts(data.products || initialProducts);
+    setSiteSettings({ ...defaultSiteSettings, ...(data.siteSettings || {}) });
+    localStorage.removeItem(BRANDS_KEY);
+    localStorage.removeItem(PRODUCTS_KEY);
+    localStorage.removeItem(SETTINGS_KEY);
+  };
+
   // 이미지 파일을 서버에 업로드하고, 모든 방문자에게 보이는 공개 URL(/api/images/:id)을 돌려받음
   const uploadImage = async (dataUrl) => {
     const res = await fetch('/api/upload', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ dataUrl }) });
@@ -181,7 +203,7 @@ export function DataProvider({ children }) {
 
   return (
     <DataContext.Provider value={{
-      brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData,
+      brands, products, addBrand, deleteBrand, updateBrand, addProduct, deleteProduct, updateProduct, resetData, undoReset,
       siteSettings, updateSiteSettings, syncNow, uploadImage
     }}>
       {children}
