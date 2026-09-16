@@ -28,7 +28,7 @@ const BrandDetail = () => {
         <div className="daesang-sub-hero-content">
           <span className="daesang-poetic-sub">{isEn ? 'Brand' : '브랜드'}</span>
           {brand.hasLogo ? (
-            <img src={brand.logo} alt={isEn ? brand.nameEn : brand.nameKo} style={{ height: '48px', objectFit: 'contain', background: '#FFFFFF', borderRadius: '8px', padding: '8px 14px', marginBottom: '16px' }} />
+            <img src={brand.logo} alt={isEn ? brand.nameEn : brand.nameKo} style={{ height: '48px', objectFit: 'contain', background: '#FFFFFF', borderRadius: '8px', padding: '8px 14px', marginBottom: '16px', transform: `scale(${Number(brand.logoScale) || 1})`, transformOrigin: 'left center' }} />
           ) : null}
           <h1>{isEn ? brand.nameEn : brand.nameKo}</h1>
           <p>{isEn ? (brand.taglineEn || brand.tagline) : brand.tagline}</p>
