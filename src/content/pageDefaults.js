@@ -53,7 +53,7 @@ export const PAGE_SCHEMA = {
       {
         label: '제휴·수출 문의 배너',
         fields: [
-          { key: 'ctaImage', label: '배너 사진', type: 'image', width: 1600, height: 2100, src: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=80' },
+          { key: 'ctaImage', label: '배너 사진', type: 'image', width: 1600, height: 2100, src: './assets/stock/unsplash-1486406146926-c627a92ad1ab.jpg' },
           { key: 'ctaEyebrow', label: '작은 라벨', type: 'text', size: '0.66rem', ko: '제휴 및 수출', en: 'Partnership & Export' },
           { key: 'ctaTitle', label: '제목', type: 'textarea', size: '1.1~1.25rem', ko: '국내 유통망을 넘어 세계 시장으로', en: 'Beyond Korea, into new markets.' },
           { key: 'ctaBody', label: '본문', type: 'textarea', size: '0.85rem', ko: '대형 할인마트, 이커머스, 글로벌 바이어와 OEM/ODM 및 수출 파트너십을 진행합니다. 필요한 내용을 알려주세요.', en: 'We work with hypermarkets, e-commerce platforms and global buyers on OEM/ODM and export partnerships. Tell us what you need.' },
@@ -69,7 +69,7 @@ export const PAGE_SCHEMA = {
       {
         label: '상단 배너',
         fields: [
-          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2560, height: 900, src: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=2560&q=80' },
+          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2560, height: 900, src: './assets/stock/unsplash-1522071820081-009f0129c71c.jpg' },
           { key: 'heroEyebrow', label: '작은 라벨', type: 'text', size: '0.66rem', koOnly: true, ko: 'CORPORATE OVERVIEW & CI' },
           { key: 'heroTitle', label: '페이지 제목', type: 'text', size: '1.35~1.55rem', ko: '회사소개', en: 'About Us' },
           { key: 'heroBody', label: '본문', type: 'textarea', size: '0.85rem', ko: '30년이상 축적된 정직한 기술과 신뢰를 바탕으로 반려동물과 반려인의 행복한 내일을 열어갑니다.', en: 'Opening a happy tomorrow for pets and pet owners based on honest technology and trust accumulated over 30 years.' },
@@ -143,7 +143,7 @@ export const PAGE_SCHEMA = {
         label: '상단 배너',
         note: '제품 카드는 "신규 제품 추가" 탭에서 바꿉니다.',
         fields: [
-          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2400, height: 850, src: 'https://images.unsplash.com/photo-1589924691995-400dc9ecc119?auto=format&fit=crop&w=2400&q=80' },
+          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2400, height: 850, src: './assets/stock/unsplash-1589924691995-400dc9ecc119.jpg' },
           { key: 'heroEyebrow', label: '작은 라벨', type: 'text', size: '0.66rem', ko: '제품 카탈로그', en: 'Catalog' },
           { key: 'heroTitle', label: '페이지 제목', type: 'text', size: '1.35~1.55rem', ko: '부명이 만드는 모든 것', en: 'Everything we make.' },
           { key: 'heroBody', label: '본문', type: 'textarea', size: '0.85rem', ko: '4개 전문 펫 브랜드의 사료, 간식, 모래, 용품 전 품목을 한 곳에서 확인하실 수 있습니다.', en: 'Nutrition, treats, litter and daily supplies across four specialised pet brands.' },
@@ -158,7 +158,7 @@ export const PAGE_SCHEMA = {
       {
         label: '상단 배너',
         fields: [
-          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2560, height: 900, src: 'https://images.unsplash.com/photo-1423666639041-f56000c27a9a?auto=format&fit=crop&w=2560&q=80' },
+          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2560, height: 900, src: './assets/stock/unsplash-1423666639041-f56000c27a9a.jpg' },
           { key: 'heroEyebrow', label: '작은 라벨', type: 'text', size: '0.66rem', koOnly: true, ko: 'INQUIRY & SALES CONTACT' },
           { key: 'heroTitle', label: '페이지 제목', type: 'text', size: '1.35~1.55rem', ko: 'B2B 입점 및 영업 담당자 문의', en: 'Contact Us & Sales Routing' },
           { key: 'heroBody', label: '본문', type: 'textarea', size: '0.85rem', ko: '(주)부명과 함께 성장할 국내외 파트너사의 문의 및 영업 담당자를 안내합니다.', en: 'Connect with BOOMYUNG for domestic retail distribution and global export partnerships.' },
@@ -194,7 +194,7 @@ export const PAGE_SCHEMA = {
         label: '상단 배너',
         note: '브랜드 카드 내용은 "브랜드 추가 등록" 탭에서 바꿉니다.',
         fields: [
-          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2560, height: 900, src: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=2560&q=80' },
+          { key: 'heroImage', label: '배경 사진', type: 'image', width: 2560, height: 900, src: './assets/stock/unsplash-1543466835-00a7907e9de1.jpg' },
           { key: 'heroEyebrow', label: '작은 라벨', type: 'text', size: '0.66rem', koOnly: true, ko: 'OUR PORTFOLIO' },
           { key: 'heroTitle', label: '페이지 제목', type: 'text', size: '1.35~1.55rem', ko: '브랜드 포트폴리오', en: 'Brand Ecosystem' },
           { key: 'heroBody', label: '본문', type: 'textarea', size: '0.85rem', ko: '(주)부명의 전문 펫 브랜드 라인업을 소개합니다.', en: 'Discover our specialized brands tailored for healthy pet life.' },

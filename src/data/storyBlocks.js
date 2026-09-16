@@ -11,7 +11,7 @@ export const storyBlocks = [
     bodyEn: ['30 years, we have built products around a single question:', 'is this good enough for a life we love? Every formula, every pack, every shipment answers it.'],
     metaKo: ['1995년 설립', '펫 헬스케어'],
     metaEn: ['Since 1995', 'Pet Healthcare'],
-    image: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&w=1800&q=80'
+    image: './assets/stock/unsplash-1548199973-03cce0bbc87b.jpg'
   },
   {
     tagKo: '02 — 생산',
@@ -44,6 +44,6 @@ export const storyBlocks = [
     bodyEn: ['An integrated logistics centre keeps inventory accurate and delivery fast, supplying 20+ major retail channels across Korea and export partners abroad.'],
     metaKo: ['20개+ 채널', '글로벌 수출'],
     metaEn: ['20+ Channels', 'Global Export'],
-    image: 'https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1800&q=80'
+    image: './assets/stock/unsplash-1553413077-190dd305871c.jpg'
   }
 ];

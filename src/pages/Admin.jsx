@@ -715,7 +715,7 @@ export default function Admin() {
   if (!isAuthenticated) {
     return (
       <div className="daesang-sub-page">
-        <section className="daesang-sub-hero" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=2560&q=80')" }}>
+        <section className="daesang-sub-hero" style={{ backgroundImage: "url('./assets/stock/unsplash-1454165804606-c3d57bc86b40.jpg')" }}>
           <div className="daesang-section-overlay"></div>
           <div className="daesang-sub-hero-content">
             <span className="daesang-poetic-sub">ADMINISTRATION</span>
@@ -767,7 +767,7 @@ export default function Admin() {
   // Authenticated Screen
   return (
     <div className="daesang-sub-page">
-      <section className="daesang-sub-hero" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=2560&q=80')" }}>
+      <section className="daesang-sub-hero" style={{ backgroundImage: "url('./assets/stock/unsplash-1454165804606-c3d57bc86b40.jpg')" }}>
         <div className="daesang-section-overlay"></div>
         <div className="daesang-sub-hero-content">
           <span className="daesang-poetic-sub">ADMINISTRATION</span>
