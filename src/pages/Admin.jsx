@@ -799,34 +799,34 @@ export default function Admin() {
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '10px', marginBottom: '36px', borderBottom: '2px solid #E5E7EB', paddingBottom: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '6px', marginBottom: '36px', borderBottom: '2px solid #E5E7EB', paddingBottom: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
             <button
               onClick={() => setActiveTab('brand')}
-              style={{ padding: '8px 14px', fontSize: '0.8rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'brand' ? '#0066B3' : '#F3F4F6', color: activeTab === 'brand' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
+              style={{ padding: '6px 10px', fontSize: '0.76rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'brand' ? '#0066B3' : '#F3F4F6', color: activeTab === 'brand' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
             >
               1. {isEn ? 'Add New Brand' : '브랜드 추가 등록'}
             </button>
             <button
               onClick={() => setActiveTab('product')}
-              style={{ padding: '8px 14px', fontSize: '0.8rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'product' ? '#0066B3' : '#F3F4F6', color: activeTab === 'product' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
+              style={{ padding: '6px 10px', fontSize: '0.76rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'product' ? '#0066B3' : '#F3F4F6', color: activeTab === 'product' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
             >
               2. {isEn ? 'Add New Product' : '신규 제품 추가'}
             </button>
             <button
               onClick={() => setActiveTab('settings')}
-              style={{ padding: '8px 14px', fontSize: '0.8rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'settings' ? '#0066B3' : '#F3F4F6', color: activeTab === 'settings' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
+              style={{ padding: '6px 10px', fontSize: '0.76rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'settings' ? '#0066B3' : '#F3F4F6', color: activeTab === 'settings' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
             >
               3. {isEn ? 'Site Settings' : '사이트 설정'}
             </button>
             <button
               onClick={() => setActiveTab('pages')}
-              style={{ padding: '8px 14px', fontSize: '0.8rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'pages' ? '#0066B3' : '#F3F4F6', color: activeTab === 'pages' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
+              style={{ padding: '6px 10px', fontSize: '0.76rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'pages' ? '#0066B3' : '#F3F4F6', color: activeTab === 'pages' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
             >
               4. {isEn ? 'Page Text / Images' : '페이지 문구·이미지'}
             </button>
             <button
               onClick={() => setActiveTab('security')}
-              style={{ padding: '8px 14px', fontSize: '0.8rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'security' ? '#0066B3' : '#F3F4F6', color: activeTab === 'security' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
+              style={{ padding: '6px 10px', fontSize: '0.76rem', fontWeight: '700', border: 'none', borderRadius: '6px', cursor: 'pointer', backgroundColor: activeTab === 'security' ? '#0066B3' : '#F3F4F6', color: activeTab === 'security' ? '#FFFFFF' : '#4B5563', transition: 'all 0.2s ease' }}
             >
               5. {isEn ? 'Security' : '보안'}
             </button>
@@ -837,7 +837,7 @@ export default function Admin() {
                   alert(isEn ? 'Data reset.' : '기본 데이터로 초기화되었습니다.');
                 }
               }}
-              style={{ marginLeft: 'auto', padding: '7px 11px', fontSize: '0.75rem', fontWeight: '600', border: '1px solid #FCA5A5', borderRadius: '6px', cursor: 'pointer', backgroundColor: '#FEF2F2', color: '#DC2626' }}
+              style={{ marginLeft: 'auto', padding: '6px 8px', fontSize: '0.7rem', fontWeight: '600', border: '1px solid #FCA5A5', borderRadius: '6px', cursor: 'pointer', backgroundColor: '#FEF2F2', color: '#DC2626' }}
             >
               🔄 {isEn ? 'Reset Data' : '데이터 초기화'}
             </button>
@@ -849,7 +849,7 @@ export default function Admin() {
                     .catch((err) => alert(err.message || (isEn ? 'Undo failed.' : '되돌리기에 실패했습니다.')));
                 }
               }}
-              style={{ padding: '7px 11px', fontSize: '0.75rem', fontWeight: '600', border: '1px solid #BFDBFE', borderRadius: '6px', cursor: 'pointer', backgroundColor: '#EFF6FF', color: '#1D4ED8' }}
+              style={{ padding: '6px 8px', fontSize: '0.7rem', fontWeight: '600', border: '1px solid #BFDBFE', borderRadius: '6px', cursor: 'pointer', backgroundColor: '#EFF6FF', color: '#1D4ED8' }}
             >
               ↩️ {isEn ? 'Undo Reset' : '초기화 되돌리기'}
             </button>
