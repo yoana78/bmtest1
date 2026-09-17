@@ -95,7 +95,7 @@ export default function Home() {
             <Reveal key={b.id} delay={Math.min(i + 1, 4)}>
               <Link to={`/brands/${b.id}`} className="cine-row">
                 <span className="cine-row-logo-wrap">
-                  {b.logo && <img className="cine-row-logo" src={b.logo} alt="" />}
+                  {b.logo && <img className="cine-row-logo" src={b.logo} alt="" style={{ transform: `scale(${Number(b.logoScale) || 1})` }} />}
                 </span>
                 <span className="cine-row-name">{isEn ? (b.nameEn || b.nameKo) : b.nameKo}</span>
                 <span className="cine-row-desc">{isEn ? b.descriptionEn : b.descriptionKo}</span>
@@ -115,7 +115,7 @@ export default function Home() {
             <Reveal key={b.id} delay={Math.min(i + 1, 4)}>
               <Link to={`/imported-brands/${b.id}`} className="cine-row">
                 <span className="cine-row-logo-wrap">
-                  {b.logo && <img className="cine-row-logo" src={b.logo} alt="" />}
+                  {b.logo && <img className="cine-row-logo" src={b.logo} alt="" style={{ transform: `scale(${Number(b.logoScale) || 1})` }} />}
                 </span>
                 <span className="cine-row-name">{isEn ? (b.nameEn || b.nameKo) : b.nameKo}</span>
                 <span className="cine-row-desc">{isEn ? b.descriptionEn : b.descriptionKo}</span>

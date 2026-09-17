@@ -31,7 +31,7 @@ export default function Brands() {
               <Link to={`/brands/${b.id}`} key={b.id} className="daesang-brand-card-detailed">
                 <div className="brand-card-logo">
                   {b.hasLogo ? (
-                    <img src={b.logo} alt={b.nameEn} />
+                    <img src={b.logo} alt={b.nameEn} style={{ transform: `scale(${Number(b.logoScale) || 1})` }} />
                   ) : (
                     <h3 style={{ color: b.color, fontSize: '1.8rem' }}>{b.nameKo}</h3>
                   )}

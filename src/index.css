@@ -1114,6 +1114,8 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 .cat-rail {
   position: sticky;
   top: 40px;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
   border-top: 1px solid var(--line);
   padding-top: 24px;
 }
@@ -1520,7 +1522,7 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
   .pd-media { position: relative; height: 52vh; }
   .pd-body { border-left: none; }
   .cat-layout { grid-template-columns: 1fr; gap: 30px; }
-  .cat-rail { position: relative; top: 0; }
+  .cat-rail { position: relative; top: 0; max-height: none; overflow-y: visible; }
   .cat-rail-group { margin-bottom: 22px; }
   .cat-rail-list { flex-direction: row; flex-wrap: wrap; gap: 8px; }
   .cat-rail-btn { border-bottom: none; border: 1px solid var(--line); border-radius: 999px; padding: 7px 16px; }

@@ -10,9 +10,9 @@ function splitParagraphs(text) {
 
 
 const wellzenImages = [
-  './assets/wellzen/wellzen_01.png',
-  './assets/wellzen/wellzen_02.png',
-  './assets/wellzen/wellzen_03.png'
+  './assets/wellzen/wellzen_01.jpg',
+  './assets/wellzen/wellzen_02.jpg',
+  './assets/wellzen/wellzen_03.jpg'
 ];
 
 const homadImages = [

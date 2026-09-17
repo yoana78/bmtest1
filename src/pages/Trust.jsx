@@ -27,8 +27,8 @@ export default function Trust() {
       titleEn: 'Environmental Management System',
       descKo: '생산 전 과정에서 환경 영향을 최소화하는 국제 표준 환경경영시스템을 적용합니다.',
       descEn: 'Certified environmental management system minimizing environmental impact across production processes.',
-      image: './assets/certifications/iso14001.png',
-      imageEn: './assets/certifications/iso14001_en.png'
+      image: './assets/certifications/iso14001.jpg',
+      imageEn: './assets/certifications/iso14001_en.jpg'
     },
     {
       code: 'ISO 22000',
@@ -36,8 +36,8 @@ export default function Trust() {
       titleEn: 'Food Safety Management System',
       descKo: '원료 입고부터 제조, 포장 전 과정에 걸쳐 국제 표준 식품안전 경영시스템을 적용합니다.',
       descEn: 'Certified international food safety management from raw materials to final packaging.',
-      image: './assets/certifications/iso22000.png',
-      imageEn: './assets/certifications/iso22000_en.png'
+      image: './assets/certifications/iso22000.jpg',
+      imageEn: './assets/certifications/iso22000_en.jpg'
     },
     {
       code: 'HACCP',
@@ -45,8 +45,8 @@ export default function Trust() {
       titleEn: 'Hazard Analysis Critical Control Point',
       descKo: '제조 공정상 발생할 수 있는 위해요소를 사전 차단하여 안전한 사료와 간식을 생산합니다.',
       descEn: 'Rigorous monitoring and prevention of biological, chemical, and physical hazards.',
-      image: './assets/certifications/haccp.png',
-      imageEn: './assets/certifications/haccp_en.png'
+      image: './assets/certifications/haccp.jpg',
+      imageEn: './assets/certifications/haccp_en.jpg'
     },
     {
       code: 'AAFCO',
@@ -143,7 +143,7 @@ export default function Trust() {
       no: '30-0833217',
       titleKo: '애견용 패드',
       titleEn: 'Pet Pad',
-      image: './assets/patents/design_0833217.png'
+      image: './assets/patents/design_0833217.jpg'
     },
     {
       type: 'design',
@@ -152,7 +152,7 @@ export default function Trust() {
       no: '30-0847166',
       titleKo: '애완동물용 목줄',
       titleEn: 'Pet Leash',
-      image: './assets/patents/design_0847166.png'
+      image: './assets/patents/design_0847166.jpg'
     },
   ];
 
