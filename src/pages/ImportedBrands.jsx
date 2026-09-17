@@ -30,7 +30,7 @@ export default function ImportedBrands() {
       <section className="daesang-white-section">
         <div className="daesang-container-wide">
           <div className="daesang-grid-brands-page">
-            {brands.map((b, idx) => (
+            {brands.map((b) => (
               <Link to={`/imported-brands/${b.id}`} key={b.id} className="daesang-brand-card-detailed">
                 <div className="brand-card-logo">
                   {b.hasLogo ? (
@@ -40,11 +40,10 @@ export default function ImportedBrands() {
                   )}
                 </div>
                 <div className="brand-card-info">
-                  <span className="brand-card-num">0{idx + 1}</span>
                   <h2>{isEn ? (b.nameEn || b.nameKo) : b.nameKo}</h2>
                   <span className="brand-card-tagline">{isEn ? (b.taglineEn || b.tagline) : b.tagline}</span>
                   <p>{isEn ? b.descriptionEn : b.descriptionKo}</p>
-                  <span className="brand-card-link">{isEn ? 'VIEW PRODUCTS' : '브랜드 세부보기'} _</span>
+                  <span className="brand-card-link">{isEn ? 'VIEW PRODUCTS' : '브랜드 바로가기'}</span>
                 </div>
               </Link>
             ))}

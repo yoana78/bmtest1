@@ -27,13 +27,10 @@ export default function Footer() {
             </div>
             <p>
               {isEn
-                ? '306, 19, Geonwon-daero 34beon-gil, Guri-si, Gyeonggi-do, Republic of Korea | TEL: +82-31-553-8003 | FAX: +82-31-592-2460'
-                : '경기도 구리시 건원대로34번길 19 306 | TEL: 031-553-8003 | FAX: 031-592-2460'}
-            </p>
-            <p>
-              {isEn
-                ? 'E-MAIL: help@petsb2b.co.kr | Business Registration No.: 132-81-49973'
-                : 'E-MAIL: help@petsb2b.co.kr | 사업자등록번호: 132-81-49973'}
+                ? '306, 19, Geonwon-daero 34beon-gil, Guri-si, Gyeonggi-do, Republic of Korea | Business Registration No.: 132-81-49973'
+                : '경기도 구리시 건원대로34번길 19 306 | 사업자등록번호: 132-81-49973'}
+              <br />
+              TEL: {isEn ? '+82-31-553-8003' : '031-553-8003'} | FAX: {isEn ? '+82-31-592-2460' : '031-592-2460'} | E-MAIL: help@petsb2b.co.kr
             </p>
           </div>
 
