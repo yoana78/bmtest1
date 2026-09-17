@@ -379,7 +379,7 @@ export default function Trust() {
               >
                 <img src={p.logo} alt={p.nameKo} style={{ maxHeight: '70px', maxWidth: '100%', objectFit: 'contain' }} />
                 <span style={{ fontSize: '0.82rem', color: '#666', marginTop: '4px', fontWeight: 500 }}>
-                  {txt('petDistTitle')}
+                  {isEn ? p.nameEn : p.nameKo}
                 </span>
               </div>
             ))}

@@ -794,7 +794,7 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
   padding: 4px;
   overflow: hidden;
 }
-.pet-distributor-card img { max-width: 49%; max-height: 49%; object-fit: contain; }
+.pet-distributor-card img { max-width: 64%; max-height: 64%; object-fit: contain; }
 
 /* CTA 스플릿 */
 .cine-cta {
@@ -1621,7 +1621,7 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 
   .pet-distributor-grid { flex-wrap: wrap; }
   .pet-distributor-card { flex: 0 1 auto; width: calc(33.333% - 8px); max-width: none; height: auto; aspect-ratio: 1; }
-  .pet-distributor-card img { max-width: 60%; max-height: 60%; }
+  .pet-distributor-card img { max-width: 78%; max-height: 78%; }
 
   .cat-grid { grid-template-columns: repeat(2, 1fr); }
   .cat-tile { padding: 12px; }

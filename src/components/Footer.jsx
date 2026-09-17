@@ -46,7 +46,7 @@ export default function Footer() {
                 {isEn ? 'Our Brands' : '브랜드'}
               </Link>
               <Link to="/trust" style={{ color: '#CBD5E1', textDecoration: 'none' }}>
-                {isEn ? 'Trust & Quality' : '신뢰와 인증'}
+                {isEn ? 'Trust & Quality' : '품질·인증'}
               </Link>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -68,9 +68,6 @@ export default function Footer() {
           <div style={{ display: 'flex', gap: '24px' }}>
             <span style={{ color: '#CBD5E1', cursor: 'pointer' }} onClick={() => setShowPrivacyModal(true)}>{isEn ? 'Privacy Policy' : '개인정보처리방침'}</span>
             <span style={{ color: '#CBD5E1', cursor: 'pointer' }} onClick={() => setShowTermsModal(true)}>{isEn ? 'Terms of Service' : '이용약관'}</span>
-            <Link to="/admin" style={{ color: '#CBD5E1', textDecoration: 'none' }}>
-              {isEn ? 'Admin' : '관리자'}
-            </Link>
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ const items = [
   { to: '/brands', ko: '브랜드', en: 'Brands' },
   { to: '/imported-brands', ko: '수입브랜드', en: 'Imported Brands' },
   { to: '/catalog', ko: '제품 카탈로그', en: 'Products' },
-  { to: '/trust', ko: '신뢰와 인증', en: 'Trust' }
+  { to: '/trust', ko: '품질·인증', en: 'Trust' }
 ];
 
 export default function Header() {
