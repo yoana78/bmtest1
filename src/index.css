@@ -1063,7 +1063,7 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
 .daesang-brand-card-detailed:hover { padding-left: 26px; background: rgba(10,37,64,0.03); }
 .brand-card-logo {
   display: flex; align-items: center; justify-content: center;
-  background: #FFFFFF;
+  background: transparent;
   border-radius: 4px;
   padding: 14px;
   height: 84px;
@@ -1116,9 +1116,12 @@ body::-webkit-scrollbar-thumb { background: rgba(10,37,64,0.16); border-radius: 
   top: 40px;
   max-height: calc(100vh - 60px);
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
   border-top: 1px solid var(--line);
   padding-top: 24px;
 }
+.cat-rail::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
 
 .cat-rail-group { margin-bottom: 34px; }
 .cat-rail-group h4 {
