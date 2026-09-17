@@ -121,7 +121,7 @@ export default function ProductDetail() {
                   key={idx}
                   src={src}
                   alt={`${isEn ? product.nameEn : product.nameKo} ${idx + 1}`}
-                  style={{ width: '100%', height: 'auto', borderRadius: '8px' }}
+                  style={{ maxWidth: '100%', width: 'auto', height: 'auto', borderRadius: '8px', display: 'block', margin: '0 auto' }}
                 />
               ))}
             </div>
