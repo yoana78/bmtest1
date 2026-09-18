@@ -19,18 +19,24 @@ export default function Contact() {
     country: '',
     category: 'export', // export, domestic, other
     brand: brands[0]?.id || '',
-    message: ''
+    message: '',
+    privacyAgreed: true
   });
 
   const [activeCardModal, setActiveCardModal] = useState(null);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, type, value, checked } = e.target;
+    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
   };
 
   // 서버가 없는 정적 사이트이므로 mailto: 링크로 사용자의 메일 앱을 열어 문의 내용을 자동으로 채워줌
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.privacyAgreed) {
+      alert(isEn ? 'Please agree to the collection and use of your personal information.' : '개인정보 수집 및 이용에 동의해 주세요.');
+      return;
+    }
     const typeLabel = formData.category === 'export'
       ? (isEn ? 'Global Export' : '해외수출')
       : formData.category === 'domestic'
@@ -234,6 +240,21 @@ export default function Contact() {
                   <label>{isEn ? 'Inquiry Details *' : '상세 문의 내용 *'}</label>
                   <textarea name="message" rows="5" required value={formData.message} onChange={handleChange} placeholder={isEn ? "Please describe your business inquiry..." : "희망 품목, 희망 수량, 예상 공급 시기 등을 자유롭게 적어주세요."}></textarea>
                 </div>
+
+                {/* 개인정보 수집 및 이용 동의 (필수) */}
+                <label className="daesang-privacy-check">
+                  <input
+                    type="checkbox"
+                    name="privacyAgreed"
+                    checked={formData.privacyAgreed}
+                    onChange={handleChange}
+                  />
+                  <span>
+                    {isEn
+                      ? 'I agree to the collection and use of my personal information. (required)'
+                      : '개인정보 수집 및 이용에 동의합니다. (필수)'}
+                  </span>
+                </label>
 
                 <button type="submit" className="daesang-form-submit">
                   {isEn ? 'SUBMIT INQUIRY' : '문의 접수하기'} →
