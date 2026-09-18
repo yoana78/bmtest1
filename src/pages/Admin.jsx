@@ -312,7 +312,7 @@ export default function Admin() {
     const dataUrl = await compressImage(file);
     return uploadImage(dataUrl);
   };
-  const readAndUploadProductImage = async (file) => {
+  const readAndUploadCutout = async (file) => {
     const dataUrl = await compressProductImage(file);
     return uploadImage(dataUrl);
   };
@@ -598,7 +598,7 @@ export default function Admin() {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const url = await readAndUpload(file);
+      const url = await readAndUploadCutout(file);
       setBrandForm(prev => ({ ...prev, logo: url }));
     } catch (err) {
       alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
@@ -609,7 +609,7 @@ export default function Admin() {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const url = await readAndUpload(file);
+      const url = await readAndUploadCutout(file);
       setEditBrandForm(prev => ({ ...prev, logo: url }));
     } catch (err) {
       alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
@@ -661,7 +661,7 @@ export default function Admin() {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const url = await readAndUploadProductImage(file);
+      const url = await readAndUploadCutout(file);
       setProductForm(prev => ({ ...prev, image: url }));
     } catch (err) {
       alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
@@ -672,7 +672,7 @@ export default function Admin() {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const url = await readAndUploadProductImage(file);
+      const url = await readAndUploadCutout(file);
       setEditForm(prev => ({ ...prev, image: url }));
     } catch (err) {
       alert(isEn ? 'Image upload failed.' : '이미지 업로드에 실패했습니다.');
