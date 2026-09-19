@@ -40,9 +40,7 @@ const BrandDetail = () => {
           <div className="cine-head">
             <h2>{isEn ? 'Brand Story' : '브랜드 스토리'}</h2>
             <p>
-              {isEn
-                ? 'Aiming for a healthy life for pets through top quality and innovative research. We satisfy both customers and pets through strict quality control and reliable ingredients.'
-                : '최고의 품질과 혁신적인 연구로 반려동물의 건강한 삶을 지향합니다. 엄격한 품질 관리와 믿을 수 있는 원료를 통해 고객과 반려동물 모두에게 만족을 드립니다.'}
+              {isEn ? (brand.descriptionEn || brand.descriptionKo) : brand.descriptionKo}
             </p>
           </div>
 
